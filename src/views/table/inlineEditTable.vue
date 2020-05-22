@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { fetchList } from '@/api/book'
 
 export default {
   name: 'InlineEditTable',

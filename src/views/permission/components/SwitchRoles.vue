@@ -6,7 +6,7 @@
     {{ $t('permission.switchRoles') }}：
     <el-radio-group v-model="switchRoles">
       <el-radio-button label="editor" />
-      <el-radio-button label="admin" />
+      <el-radio-button label="adminEntity" />
     </el-radio-group>
   </div>
 </template>

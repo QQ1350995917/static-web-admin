@@ -4,7 +4,7 @@
       <a href="https://github.com/nhnent/tui.editor" target="_blank">tui.editor</a> ，simply wrapped with Vue.
       <a
         target="_blank"
-        href="https://panjiachen.github.io/vue-element-admin-site/feature/component/markdown-editor.html"
+        href="https://panjiachen.github.io/vue-element-adminEntity-site/feature/component/markdown-editor.html"
       >
         Documentation </a>
     </code>
@@ -36,7 +36,7 @@
       </el-tag>
       <el-alert
         :closable="false"
-        title="You can change the language of the admin system to see the effect"
+        title="You can change the language of the adminEntity system to see the effect"
         type="success"
       />
       <markdown-editor ref="markdownEditor" v-model="content4" :language="language" height="300px" />

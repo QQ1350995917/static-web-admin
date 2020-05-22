@@ -147,7 +147,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/book'
 import waves from '@/directive/waves' // Waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -290,7 +290,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
+          this.temp.author = 'vue-element-adminEntity'
           createArticle(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false

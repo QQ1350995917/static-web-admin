@@ -80,7 +80,7 @@ import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validURL } from '@/utils/validate'
-import { fetchArticle } from '@/api/article'
+import { fetchArticle } from '@/api/book'
 import { searchUser } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -166,7 +166,7 @@ export default {
 
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
-    // https://github.com/PanJiaChen/vue-element-admin/issues/1221
+    // https://github.com/PanJiaChen/vue-element-adminEntity/issues/1221
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {

@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { fetchList } from '@/api/book'
 import { parseTime } from '@/utils'
 
 export default {

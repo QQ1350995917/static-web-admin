@@ -2,8 +2,8 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/account/api/admin/session/login',
-    method: 'post',
+    url: '/account/api/admin/session',
+    method: 'put',
     data
   })
 }

@@ -13,11 +13,14 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
+    console.log("request with token")
     // Do something before request is sent
-    if (store.getters.token) {
-      // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-      config.headers['X-Token'] = getToken()
-    }
+    // if (store.getters.token) {
+    //   // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+    //   config.headers['X-Token'] = getToken()
+    // } else {
+    //   console.log("request without token")
+    // }
     return config
   },
   error => {
@@ -42,7 +45,9 @@ service.interceptors.response.use(
   response => {
     // const res = response.data
     const res = response
-    console.log("request.js => response : " + JSON.stringify(response))
+    console.log("request.js => response : " + JSON.stringify(res))
+    console.table(res)
+    console.table(res.data)
     if (res.status === 200) {
       return res.data
     }

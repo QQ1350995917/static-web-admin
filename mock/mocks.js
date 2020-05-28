@@ -1,4 +1,4 @@
-import user from './user'
+import user from './session'
 import role from './role'
 import article from './article'
 import search from './remoteSearch'

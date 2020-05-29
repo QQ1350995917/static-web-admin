@@ -15,7 +15,7 @@ export default {
     },
     text: {
       type: String,
-      default: 'vue-element-adminEntity'
+      default: 'vue-element-admin'
     }
   }
 }

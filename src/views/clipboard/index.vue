@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       activeName: 'directly',
-      inputData: 'https://github.com/PanJiaChen/vue-element-adminEntity'
+      inputData: 'https://github.com/PanJiaChen/vue-element-admin'
     }
   },
   methods: {

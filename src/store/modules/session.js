@@ -7,7 +7,7 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
 }
 
 const mutations = {
@@ -39,6 +39,7 @@ const actions = {
         setToken(response.data.token)
         resolve()
       }).catch(error => {
+        consoloe.log("error" + error)
         reject(error)
       })
     })
@@ -47,7 +48,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfoApi(state.token).then(response => {
+      getInfoApi().then(response => {
         const data = response
         if (!data) {
           reject('Verification failed, please Login again.')

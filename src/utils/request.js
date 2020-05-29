@@ -1,25 +1,33 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken,getUserId } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // api 的 base_url
   withCredentials: true, // 跨域请求时发送 cookies
-  timeout: 5000 // request timeout
+  timeout: 12000, // request timeout
+  headers: {
+    'x-token': getToken(),
+    'x-uid': getUserId(),
+    'x-os': 'web',
+    'x-vc': '1.0.0-SNAPSHOT'},
 })
 
 // request interceptor
 service.interceptors.request.use(
   config => {
-    console.log("request with token")
     // Do something before request is sent
     // if (store.getters.token) {
+    //   console.log("request with token ")
     //   // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-    //   config.headers['X-Token'] = getToken()
+      config.headers['x-token'] = getToken()
+      config.headers['x-uid'] = getUserId()
+      config.headers['x-os'] = 'web'
+      config.headers['x-vc'] = '1.0.0-SNAPSHOT'
     // } else {
-    //   console.log("request without token")
+    //   console.log("request without token ")
     // }
     return config
   },
@@ -45,11 +53,12 @@ service.interceptors.response.use(
   response => {
     // const res = response.data
     const res = response
-    console.log("request.js => response : " + JSON.stringify(res))
-    console.table(res)
-    console.table(res.data)
     if (res.status === 200) {
+      console.log("all response 200 :" + res.status)
       return res.data
+    }
+    if (res.status === 401) {
+      console.log("all response 401 :" + res.status)
     }
     if (res.code !== 20000) {
       Message({
@@ -66,7 +75,7 @@ service.interceptors.response.use(
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
+          store.dispatch('session/resetToken').then(() => {
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
         })

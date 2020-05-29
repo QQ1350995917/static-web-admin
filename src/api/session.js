@@ -8,11 +8,10 @@ export function loginApi(data) {
   })
 }
 
-export function getInfoApi(token) {
+export function getInfoApi() {
   return request({
     url: '/account/api/admin/session',
-    method: 'get',
-    params: { token }
+    method: 'get'
   })
 }
 

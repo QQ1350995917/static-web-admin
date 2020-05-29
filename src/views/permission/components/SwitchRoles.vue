@@ -6,7 +6,7 @@
     {{ $t('permission.switchRoles') }}：
     <el-radio-group v-model="switchRoles">
       <el-radio-button label="editor" />
-      <el-radio-button label="adminEntity" />
+      <el-radio-button label="admin" />
     </el-radio-group>
   </div>
 </template>
@@ -22,7 +22,7 @@ export default {
         return this.roles[0]
       },
       set(val) {
-        this.$store.dispatch('user/changeRoles', val).then(() => {
+        this.$store.dispatch('session/changeRoles', val).then(() => {
           this.$emit('change')
         })
       }

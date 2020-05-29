@@ -48,7 +48,7 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.username') }} : adminEntity</span>
+          <span>{{ $t('login.username') }} : admin</span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
         </div>
         <div class="tips">
@@ -150,11 +150,10 @@ export default {
           this.loading = true
           this.$store.dispatch('session/login', this.loginForm)
             .then(() => {
-              console.log(this.redirect)
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             })
-            .catch(() => {
+            .catch((error) => {
               this.loading = false
             })
         } else {
@@ -164,7 +163,7 @@ export default {
       })
     }
     // afterQRScan() {
-    //   if (e.key === 'x-adminEntity-oauth-code') {
+    //   if (e.key === 'x-admin-oauth-code') {
     //     const code = getQueryObject(e.newValue)
     //     const codeMap = {
     //       wechat: 'code',
@@ -187,7 +186,7 @@ export default {
 
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-adminEntity/pull/927 */
+/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
 $light_gray:#fff;

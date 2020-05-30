@@ -11,7 +11,7 @@ import adminDashboard from './admin'
 
 export default {
   name: 'Dashboard',
-  components: { adminDashboard, editorDashboard },
+  components: { adminDashboard},
 //  components: { editorDashboard },
   data() {
     return {

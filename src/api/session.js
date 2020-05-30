@@ -17,8 +17,8 @@ export function getInfoApi() {
 
 export function logoutApi() {
   return request({
-    url: '/account/api/admin/session/logout',
-    method: 'post'
+    url: '/account/api/admin/session',
+    method: 'delete'
   })
 }
 

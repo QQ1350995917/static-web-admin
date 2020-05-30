@@ -54,11 +54,7 @@ service.interceptors.response.use(
     // const res = response.data
     const res = response
     if (res.status === 200) {
-      console.log("all response 200 :" + res.status)
       return res.data
-    }
-    if (res.status === 401) {
-      console.log("all response 401 :" + res.status)
     }
     if (res.code !== 20000) {
       Message({

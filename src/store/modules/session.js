@@ -1,5 +1,5 @@
 import { loginApi, logoutApi, getInfoApi } from '@/api/session'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken,getUserId, setToken,setUserId, removeToken,removeUserId } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -37,9 +37,10 @@ const actions = {
         // const { data } = response
         commit('SET_TOKEN', response.data.token)
         setToken(response.data.token)
+        setUserId(response.data.uid)
         resolve()
       }).catch(error => {
-        consoloe.log("error" + error)
+        console.log("error" + error)
         reject(error)
       })
     })
@@ -78,6 +79,7 @@ const actions = {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
+        removeUserId()
         resetRouter()
         resolve()
       }).catch(error => {
@@ -92,6 +94,7 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken()
+      removeUserId()
       resolve()
     })
   },
@@ -103,6 +106,7 @@ const actions = {
 
       commit('SET_TOKEN', token)
       setToken(token)
+      setUserId("pwd-temp")
 
       const { roles } = await dispatch('getInfo')
 

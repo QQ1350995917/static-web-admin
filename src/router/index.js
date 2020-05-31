@@ -84,6 +84,67 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/book',
+    component: Layout,
+    redirect: 'search',
+    name: 'Book',
+    meta: {
+      title: 'Book',
+      icon: 'documentation'
+    },
+    children: [
+      {
+        path: 'search',
+        component: () => import('@/views/book/search'),
+        name: 'Book-Search',
+        meta: { title: 'Search', icon: 'documentation' }
+      },
+      {
+        path: 'book',
+        component: () => import('@/views/book/book'),
+        name: 'Book-Book',
+        meta: { title: 'Book', icon: 'documentation' }
+      },
+      {
+        path: 'article',
+          component: () => import('@/views/book/article'),
+        name: 'Book-Article',
+        meta: { title: 'Article', icon: 'documentation' }
+      },
+
+    ]
+  },
+  {
+    path: '/typeface',
+    component: Layout,
+    redirect: 'index',
+    name: 'Typeface',
+    meta: {
+      title: 'Typeface',
+      icon: 'documentation'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/typeface/index'),
+        name: 'Typeface-Index',
+        meta: { title: 'Index', icon: 'documentation' }
+      },
+      {
+        path: 'font',
+        component: () => import('@/views/typeface/font'),
+        name: 'Typeface-Font',
+        meta: { title: 'Font', icon: 'documentation' }
+      },
+      {
+        path: 'painting',
+          component: () => import('@/views/typeface/painting'),
+        name: 'Typeface-Painting',
+        meta: { title: 'Painting', icon: 'documentation' }
+      },
+    ]
+  },
+  {
     path: '/organization',
     component: Layout,
     redirect: 'index',

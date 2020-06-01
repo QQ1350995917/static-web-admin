@@ -18,7 +18,7 @@
 
 <script>
   export default {
-    name: 'BookSearch',
+    name: 'bookSearch',
     data () {
       return {}
     },

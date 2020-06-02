@@ -37,11 +37,25 @@
             prop="title"
             label="书名"
             width="180">
+            <template slot-scope="scope">
+              <router-link :to="{path:'bookDetail',query:{bookId:scope.row.id}}">
+                <div>
+                  <span>{{scope.row.title}}</span>
+                </div>
+              </router-link>
+            </template>
           </el-table-column>
           <el-table-column
             prop="subTitle"
             label="副题"
             width="180">
+            <template slot-scope="scope">
+              <router-link :to="{path:'bookDetail',query:{bookId:scope.row.id}}">
+                <div>
+                  <span>{{scope.row.subTitle}}</span>
+                </div>
+              </router-link>
+            </template>
           </el-table-column>
           <el-table-column
             prop="authorName"

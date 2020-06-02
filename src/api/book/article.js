@@ -6,3 +6,10 @@ export function requestArticlesApi(index, size) {
     method: 'get'
   })
 }
+
+export function articleDetailApi(articleId) {
+  return request({
+    url: '/book/api/admin/article/' + articleId,
+    method: 'get'
+  })
+}

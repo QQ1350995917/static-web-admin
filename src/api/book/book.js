@@ -7,3 +7,10 @@ export function requestBooksApi (index, size) {
   })
 }
 
+export function requestBookTablesApi (bookId, index, size) {
+  return request({
+    url: '/book/api/admin/book/' + bookId + "/" + index + "/" + size,
+    method: 'get'
+  })
+}
+

@@ -29,11 +29,6 @@
             width="80">
           </el-table-column>
           <el-table-column
-            prop="type"
-            label="类别"
-            width="80">
-          </el-table-column>
-          <el-table-column
             prop="title"
             label="标题"
             width="360">

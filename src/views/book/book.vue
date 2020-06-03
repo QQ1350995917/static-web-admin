@@ -13,7 +13,7 @@
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button type="primary" style="width: 100%">新增</el-button>
+          <el-button @click="openEditView('')" type="primary" style="width: 100%">新增</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -26,11 +26,6 @@
           <el-table-column
             prop="id"
             label="ID"
-            width="80">
-          </el-table-column>
-          <el-table-column
-            prop="type"
-            label="类别"
             width="80">
           </el-table-column>
           <el-table-column
@@ -59,27 +54,76 @@
           </el-table-column>
           <el-table-column
             prop="authorName"
-            label="作者">
+            label="作者"
+            width="80">
           </el-table-column>
           <el-table-column
             prop="publisher"
-            label="出版社">
+            label="出版社"
+            width="120">
           </el-table-column>
           <el-table-column
             prop="publicationTime"
-            label="出版时间">
+            label="出版时间"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="类别"
+            width="80">
+          </el-table-column>
+          <el-table-column
+            prop="summary"
+            label="简介" :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
-            width="100">
+            width="150">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-              <el-button type="text" size="small">编辑</el-button>
+              <el-button type="text" size="small">推荐</el-button>
+              <el-button type="text" size="small">隐藏</el-button>
+              <el-button @click="openEditView(scope.row)" type="text" size="small">编辑
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </template>
+      <el-dialog
+        title="提示"
+        :visible.sync="editViewDialogVisible"
+        width="30%"
+        :before-close="handleClose">
+        <template>
+          <el-input v-show="false"  v-model="editBook.id">
+          </el-input>
+          <el-input placeholder="请输入图书名称" v-model="editBook.title">
+            <template slot="prepend">书名</template>
+          </el-input>
+          <el-input placeholder="请输入副标题" v-model="editBook.subTitle">
+            <template slot="prepend">副标题</template>
+          </el-input>
+          <el-input placeholder="请输入作者" v-model="editBook.authorName">
+            <template slot="prepend">作者</template>
+          </el-input>
+          <el-input placeholder="请输入出版社" v-model="editBook.publisher">
+            <template slot="prepend">出版社</template>
+          </el-input>
+          <el-input placeholder="请输入出版时间" suffix-icon="el-icon-date" v-model="editBook.publicationTime">
+            <template slot="prepend">出版时间</template>
+          </el-input>
+          <el-input placeholder="请输入类别" v-model="editBook.type">
+            <template slot="prepend">类别</template>
+          </el-input>
+          <el-input placeholder="请输入简介" type="text" show-word-limit maxlength="120" v-model="editBook.summary">
+            <template slot="prepend">简介</template>
+          </el-input>
+        </template>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="closeEditView()">取 消</el-button>
+          <el-button type="primary" @click="closeEditView()">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-main>
     <el-footer>
       <el-pagination
@@ -107,12 +151,30 @@
         pageIndex: 1,
         pageSize: 12,
         total: 0,
+        editViewDialogVisible: false,
+        editBook: ''
       }
     },
     mounted: function () {
       this.doRequestBooks(this.pageIndex, this.pageSize)
     },
     methods: {
+      openEditView(editBook){
+          this.editBook = editBook;
+          this.editViewDialogVisible = true;
+      },
+      closeEditView(){
+        this.editBook = '';
+        this.editViewDialogVisible = false;
+      },
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {
+          });
+      },
       handleSizeChange: function (currentPageSize) {
         this.pageSize = currentPageSize;
         this.doRequestBooks(this.pageIndex, this.pageSize)
@@ -137,3 +199,7 @@
     }
   }
 </script>
+
+<style lang="scss">
+
+</style>

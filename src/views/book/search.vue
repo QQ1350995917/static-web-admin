@@ -1,10 +1,7 @@
 <template>
   <el-container>
     <el-header>
-
-    </el-header>
-    <el-main>
-      <div style="margin-top: 15px;">
+      <div style="margin-top: 10px;">
         <el-input
           @keyup.enter.native="onSearch()"
           placeholder="Please input"
@@ -12,6 +9,9 @@
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
+    </el-header>
+    <el-main>
+
     </el-main>
   </el-container>
 </template>

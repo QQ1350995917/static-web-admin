@@ -70,7 +70,7 @@
           <el-table-column
             prop="type"
             label="类别"
-            width="80">
+            width="120">
           </el-table-column>
           <el-table-column
             prop="summary"
@@ -79,12 +79,12 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="150">
+            width="180">
             <template slot-scope="scope">
               <el-button type="text" size="small">推荐</el-button>
               <el-button type="text" size="small">隐藏</el-button>
-              <el-button @click="openEditView(scope.row)" type="text" size="small">编辑
-              </el-button>
+              <el-button type="text" size="small">删除</el-button>
+              <el-button @click="openEditView(scope.row)" type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -95,7 +95,7 @@
         width="30%"
         :before-close="handleClose">
         <template>
-          <el-input v-show="false"  v-model="editBook.id">
+          <el-input v-show="false" v-model="editBook.id">
           </el-input>
           <el-input placeholder="请输入图书名称" v-model="editBook.title">
             <template slot="prepend">书名</template>
@@ -109,13 +109,21 @@
           <el-input placeholder="请输入出版社" v-model="editBook.publisher">
             <template slot="prepend">出版社</template>
           </el-input>
-          <el-input placeholder="请输入出版时间" suffix-icon="el-icon-date" v-model="editBook.publicationTime">
-            <template slot="prepend">出版时间</template>
-          </el-input>
-          <el-input placeholder="请输入类别" v-model="editBook.type">
-            <template slot="prepend">类别</template>
-          </el-input>
-          <el-input placeholder="请输入简介" type="text" show-word-limit maxlength="120" v-model="editBook.summary">
+          <el-date-picker style = "width: 50%;"
+            v-model="editBook.publicationTime"
+            type="date"
+            placeholder="请选择出版时间">
+          </el-date-picker>
+          <el-select filterable v-model="editBook.type" placeholder="请选择种类" style = "float: right;">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.disabled">
+            </el-option>
+          </el-select>
+          <el-input placeholder="请输入简介" type="textarea" maxlength="256" show-word-limit :rows="5" v-model="editBook.summary">
             <template slot="prepend">简介</template>
           </el-input>
         </template>
@@ -152,7 +160,22 @@
         pageSize: 12,
         total: 0,
         editViewDialogVisible: false,
-        editBook: ''
+        editBook: '',
+        options: [{
+          value: '无',
+          label: '无'
+        },{
+          value: '纸质书',
+          label: '纸质书'
+        }, {
+          value: '电子书',
+          label: '电子书',
+          disabled: false
+        }, {
+          value: '电子书+纸质书',
+          label: '电子书+纸质书',
+          disabled: false
+        }]
       }
     },
     mounted: function () {
@@ -160,8 +183,8 @@
     },
     methods: {
       openEditView(editBook){
-          this.editBook = editBook;
-          this.editViewDialogVisible = true;
+        this.editBook = editBook;
+        this.editViewDialogVisible = true;
       },
       closeEditView(){
         this.editBook = '';
@@ -200,6 +223,11 @@
   }
 </script>
 
-<style lang="scss">
-
+<style>
+.el-input {
+  margin-bottom: 10px;
+}
+.el-input-group__prepend {
+  width: 100px;
+}
 </style>

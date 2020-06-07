@@ -7,13 +7,13 @@
             <el-input
               @keyup.enter.native="onSearch()"
               placeholder="Please input"
-              v-model="input" class="input-with-select">
+              v-model="searchKeyword" class="input-with-select">
               <el-button slot="append" icon="el-icon-search"></el-button>
             </el-input>
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button @click="openEditView('')" type="primary" style="width: 100%">新增</el-button>
+          <el-button @click="openEditView(-1,'')" type="primary" style="width: 100%">新增图书</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -55,7 +55,7 @@
           <el-table-column
             prop="authorName"
             label="作者"
-            width="80">
+            width="120" :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column
             prop="publisher"
@@ -79,12 +79,27 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="180">
+            width="220">
             <template slot-scope="scope">
-              <el-button type="text" size="small">推荐</el-button>
-              <el-button type="text" size="small">隐藏</el-button>
-              <el-button type="text" size="small">删除</el-button>
-              <el-button @click="openEditView(scope.row)" type="text" size="small">编辑</el-button>
+              <el-button @click="doRequestRecommendBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.recommend == null || scope.row.recommend == -1">推荐
+              </el-button>
+              <el-button @click="doRequestRecommendCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.recommend == 1">取消推荐
+              </el-button>
+              <el-button @click="doRequestVisibleBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.visibility == -1">取消隐藏
+              </el-button>
+              <el-button @click="doRequestVisibleCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.visibility == null || scope.row.visibility == 1">隐藏
+              </el-button>
+              <el-button @click="doRequestDeleteBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.delStatus == null || scope.row.delStatus == -1">删除
+              </el-button>
+              <el-button @click="doRequestDeleteCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
+                         v-if="scope.row.delStatus == 1">取消删除
+              </el-button>
+              <el-button @click="openEditView(scope.$index,scope.row)" type="text" size="small">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -93,28 +108,28 @@
         title="提示"
         :visible.sync="editViewDialogVisible"
         width="30%"
-        :before-close="handleClose">
+        :before-close="closeEditView">
         <template>
-          <el-input v-show="false" v-model="editBook.id">
+          <el-input v-show="false" v-model="currentEditBook.id">
           </el-input>
-          <el-input placeholder="请输入图书名称" v-model="editBook.title">
+          <el-input placeholder="请输入图书名称" required v-model="currentEditBook.title" clearable>
             <template slot="prepend">书名</template>
           </el-input>
-          <el-input placeholder="请输入副标题" v-model="editBook.subTitle">
+          <el-input placeholder="请输入副标题" v-model="currentEditBook.subTitle" clearable>
             <template slot="prepend">副标题</template>
           </el-input>
-          <el-input placeholder="请输入作者" v-model="editBook.authorName">
+          <el-input placeholder="请输入作者" v-model="currentEditBook.authorName" clearable>
             <template slot="prepend">作者</template>
           </el-input>
-          <el-input placeholder="请输入出版社" v-model="editBook.publisher">
+          <el-input placeholder="请输入出版社" v-model="currentEditBook.publisher" clearable>
             <template slot="prepend">出版社</template>
           </el-input>
-          <el-date-picker style = "width: 50%;"
-            v-model="editBook.publicationTime"
-            type="date"
-            placeholder="请选择出版时间">
+          <el-date-picker style="width: 50%;"
+                          v-model="currentEditBook.publicationTime"
+                          type="date"
+                          placeholder="请选择出版时间" clearable>
           </el-date-picker>
-          <el-select filterable v-model="editBook.type" placeholder="请选择种类" style = "float: right;">
+          <el-select filterable v-model="currentEditBook.type" placeholder="请选择种类" style="float: right;" clearable>
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -123,13 +138,14 @@
               :disabled="item.disabled">
             </el-option>
           </el-select>
-          <el-input placeholder="请输入简介" type="textarea" maxlength="256" show-word-limit :rows="5" v-model="editBook.summary">
+          <el-input placeholder="请输入简介" type="textarea" maxlength="256" show-word-limit :rows="5"
+                    v-model="currentEditBook.summary" clearable>
             <template slot="prepend">简介</template>
           </el-input>
         </template>
         <span slot="footer" class="dialog-footer">
           <el-button @click="closeEditView()">取 消</el-button>
-          <el-button type="primary" @click="closeEditView()">确 定</el-button>
+          <el-button type="primary" @click="commitEditView()">确 定</el-button>
         </span>
       </el-dialog>
     </el-main>
@@ -143,28 +159,39 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
-
     </el-footer>
   </el-container>
 </template>
 <script>
-  import {requestBooksApi} from '@/api/book/book'
+  import {
+    requestBooksApi,
+    requestCreateBookApi,
+    requestUpdateBookApi,
+    requestRecommendBooksApi,
+    requestRecommendCancelBooksApi,
+    requestVisibleBooksApi,
+    requestVisibleCancelBooksApi,
+    requestDeleteBooksApi,
+    requestDeleteCancelBooksApi,
+  } from '@/api/book/book'
   import ElFooter from "../../../node_modules/element-ui/packages/footer/src/main";
   export default {
     components: {ElFooter},
     name: 'book',
     data() {
       return {
+        searchKeyword: '',
         books: [],
+        bookIds: [],
         pageIndex: 1,
         pageSize: 12,
         total: 0,
         editViewDialogVisible: false,
-        editBook: '',
+        currentEditBook: {},
         options: [{
           value: '无',
           label: '无'
-        },{
+        }, {
           value: '纸质书',
           label: '纸质书'
         }, {
@@ -182,21 +209,35 @@
       this.doRequestBooks(this.pageIndex, this.pageSize)
     },
     methods: {
-      openEditView(editBook){
-        this.editBook = editBook;
-        this.editViewDialogVisible = true;
+      openEditView(index, editBook){
+        if (index == -1) {
+          this.$set(this.currentEditBook, "title", "")
+          this.$set(this.currentEditBook, "subTitle", "")
+          this.$set(this.currentEditBook, "authorName", "")
+          this.$set(this.currentEditBook, "publisher", "")
+          this.$set(this.currentEditBook, "publicationTime", "")
+          this.$set(this.currentEditBook, "type", "")
+          this.$set(this.currentEditBook, "summary", "")
+        } else {
+          this.currentEditBook = JSON.parse(JSON.stringify(editBook))
+        }
+        this.$set(this.currentEditBook, "_index", index)
+        this.editViewDialogVisible = true
       },
-      closeEditView(){
-        this.editBook = '';
-        this.editViewDialogVisible = false;
-      },
-      handleClose(done) {
+      closeEditView() {
         this.$confirm('确认关闭？')
           .then(_ => {
-            done();
+            this.editViewDialogVisible = false
           })
           .catch(_ => {
           });
+      },
+      commitEditView(){
+        if(this.currentEditBook._index == -1) {
+          this.doRequestCreateBook()
+        } else {
+          this.doRequestUpdateBook()
+        }
       },
       handleSizeChange: function (currentPageSize) {
         this.pageSize = currentPageSize;
@@ -218,16 +259,142 @@
             this.$message.error('参数错误')
           }
         });
+      },
+      doRequestCreateBook(){
+        requestCreateBookApi(this.currentEditBook).then((res) => {
+          if (res.meta.code === 200) {
+            this.editViewDialogVisible = false;
+            this.$message({
+              message: '新增' + res.data + '行',
+              type: 'success'
+            });
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        });
+      },
+      doRequestUpdateBook(){
+        requestUpdateBookApi(this.currentEditBook.id, this.currentEditBook).then((res) => {
+          if (res.meta.code === 200) {
+            this.editViewDialogVisible = false;
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[this.currentEditBook._index] = this.currentEditBook;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        });
+      },
+      doRequestRecommendBooks(index, id){
+        this.bookIds.push(id);
+        requestRecommendBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = [];
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].recommend = 1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
+      },
+      doRequestRecommendCancelBooks(index, id){
+        this.bookIds.push(id);
+        requestRecommendCancelBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = [];
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].recommend = -1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
+      },
+      doRequestVisibleBooks(index, id){
+        this.bookIds.push(id);
+        requestVisibleBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = []
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].visibility = 1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
+      },
+      doRequestVisibleCancelBooks(index, id){
+        this.bookIds.push(id);
+        requestVisibleCancelBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = []
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].visibility = -1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
+      },
+      doRequestDeleteBooks(index, id){
+        this.bookIds.push(id);
+        requestDeleteBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = []
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].delStatus = -1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
+      },
+      doRequestDeleteCancelBooks(index, id){
+        this.bookIds.push(id);
+        requestDeleteCancelBooksApi(this.bookIds).then((res) => {
+          if (res.meta.code === 200) {
+            this.bookIds = []
+            this.$message({
+              message: '更新' + res.data + '行',
+              type: 'success'
+            });
+            this.books[index].delStatus = 1;
+            this.currentEditBook = {};
+          } else {
+            this.$message.error('参数错误')
+          }
+        })
       }
     }
   }
 </script>
 
 <style>
-.el-input {
-  margin-bottom: 10px;
-}
-.el-input-group__prepend {
-  width: 100px;
-}
+  .el-input {
+    margin-bottom: 10px;
+  }
+
+  .el-input-group__prepend {
+    width: 100px;
+  }
 </style>

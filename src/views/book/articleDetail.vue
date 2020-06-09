@@ -14,23 +14,22 @@
             <el-table-column type="index"></el-table-column>
             <el-table-column>
               <template slot-scope="scope">
-              <span v-if="scope.row._editor">
-              <el-input size="mini" type="textarea" autosize placeholder="请输入段落内容"></el-input>
-              </span>
-                <span v-else>{{paragraphs[scope.$index]}}</span>
+                <el-input v-model="newParagraph._content" v-if="scope.row._editable" size="mini" type="textarea"
+                          autosize placeholder="请输入段落内容"></el-input>
+                <span v-else>{{paragraphs[scope.$index]._content}}</span>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="100">
               <template slot-scope="scope">
                 <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;"
-                      @click="pwdChange(scope.row,scope.$index,true)">
-                    {{scope.row._editor ? '保存' : "修改"}}
+                      @click="modifyParagraph(scope.row,scope.$index,true)">
+                    {{scope.row._editable ? '保存' : "修改"}}
                 </span>
-                <span v-if="!scope.row._editor" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;">
+                <span v-if="!scope.row._editable" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;">
                   删除
                 </span>
                 <span v-else class="el-tag el-tag--mini" style="cursor: pointer;"
-                      @click="pwdChange(scope.row,scope.$index,false)">
+                      @click="modifyParagraph(scope.row,scope.$index,false)">
                   取消
                 </span>
               </template>
@@ -38,7 +37,7 @@
           </el-table>
         </el-col>
         <el-col :span="24">
-          <div class="el-table-add-row" style="width: 99.2%;" @click="addMasterUser()"><span>+ 添加</span></div>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addNewParagraph()"><span>+ 添加</span></div>
         </el-col>
       </el-row>
     </el-main>
@@ -53,7 +52,7 @@
         articleId: this.$route.query.articleId,
         article: {},
         paragraphs: [],
-        currentParagraph: {},
+        newParagraph: {},
         master_user: {
           sel: null
         },
@@ -68,53 +67,53 @@
           if (res.meta.code === 200) {
             this.article = res.data;
             if (this.article.paragraphs) {
-              this.paragraphs = this.article.paragraphs;
+              for (let paragraph of this.article.paragraphs) {
+                let editableParagraph = {
+                  "_content": paragraph,
+                  "_editable": false
+                };
+                this.paragraphs.push(editableParagraph);
+              }
             }
           } else {
             this.$message.error('参数错误')
           }
         });
       },
-      //读取表格数据
-      readMasterUser() {
-        //根据实际情况，自己改下啊
-        this.paragraphs.map(i => {
-          i._editor = false;
-          return i;
-        });
-      },
-      //添加账号
-      addMasterUser() {
-        for (let i of this.paragraphs) {
-          if (i._editor) {
+      addNewParagraph() {
+        for (let paragraph of this.paragraphs) {
+          if (paragraph._editable) {
             return this.$message.warning("请先保存当前编辑项");
           }
         }
-        let j = {
-          "_editor": true
+        let editableParagraph = {
+          "_content": null,
+          "_editable": true
         };
-        this.paragraphs.push(j);
-        this.currentParagraph = JSON.parse(JSON.stringify(j));
+        this.paragraphs.push(editableParagraph);
+        this.newParagraph = JSON.parse(JSON.stringify(editableParagraph));
       },
       //修改
-      pwdChange(row, index, cg) {
+      modifyParagraph(row, index, cg) {
         //点击修改 判断是否已经保存所有操作
         for (let i of this.paragraphs) {
-          if (i._editor && i.id != row.id) {
+          if (i._editable && i.id != row.id) {
             this.$message.warning("请先保存当前编辑项");
             return false;
           }
         }
         //是否是取消操作
         if (!cg) {
-          if (!this.currentParagraph.id) this.paragraphs.splice(index, 1);
-          return row._editor = !row._editor;
+          if (!this.newParagraph.id) {
+            this.paragraphs.splice(index, 1);
+          }
+          return row._editable = !row._editable;
         }
         //提交数据
-        if (row._editor) {
+        if (row._editable) {
           //项目是模拟请求操作  自己修改下
           (function () {
-            let data = JSON.parse(JSON.stringify(this.currentParagraph));
+            let data = JSON.parse(JSON.stringify(this.newParagraph));
             for (let k in data) row[k] = data[k];
             this.$message({
               type: 'success',
@@ -122,12 +121,20 @@
             });
             //然后这边重新读取表格数据
             this.readMasterUser();
-            row._editor = false;
+            row._editable = false;
           })();
         } else {
-          this.currentParagraph = JSON.parse(JSON.stringify(row));
-          row._editor = true;
+          this.newParagraph = JSON.parse(JSON.stringify(row));
+          row._editable = true;
         }
+      },
+      //读取表格数据
+      readMasterUser() {
+        //根据实际情况，自己改下啊
+        this.paragraphs.map(i => {
+          i._editable = false;
+          return i;
+        });
       }
     }
   }

@@ -33,7 +33,7 @@
             label="标题"
             width="360">
             <template slot-scope="scope">
-              <router-link :to="{path:'articleDetail',query:{articleId:scope.row.id}}">
+              <router-link :to="{path:'articleDetail',query:{bookId:scope.row.bookId,articleId:scope.row.id}}">
                 <div>
                   <span>{{scope.row.title}}</span>
                 </div>
@@ -45,7 +45,7 @@
             label="副题"
             width="360">
             <template slot-scope="scope">
-              <router-link :to="{path:'articleDetail',query:{articleId:scope.row.id}}">
+              <router-link :to="{path:'articleDetail',query:{bookId:scope.row.bookId,articleId:scope.row.id}}">
                 <div>
                   <span>{{scope.row.subTitle}}</span>
                 </div>

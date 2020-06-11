@@ -14,7 +14,8 @@
             <el-table-column type="index"></el-table-column>
             <el-table-column>
               <template slot-scope="scope">
-                <el-input v-model="newParagraph._content" v-if="scope.row._editable" size="mini" type="textarea"
+                <el-input v-model="currentEditableParagraph._content" v-if="scope.row._editable" size="mini"
+                          type="textarea"
                           autosize placeholder="请输入段落内容"></el-input>
                 <span v-else>{{paragraphs[scope.$index]._content}}</span>
               </template>
@@ -44,18 +45,21 @@
   </el-container>
 </template>
 <script>
-  import {articleDetailApi} from '@/api/book/article'
+  import {articleDetailApi, requestUpdateArticleApi} from '@/api/book/article'
   export default {
     name: 'articleDetail',
     data() {
       return {
+        bookId: this.$route.query.bookId,
         articleId: this.$route.query.articleId,
         article: {},
         paragraphs: [],
-        newParagraph: {},
-        master_user: {
-          sel: null
+        currentEditableParagraph: {},
+        initTempParagraph: {
+          "_content": null,
+          "_editable": false
         },
+        addNewParagraphFlag: false
       }
     },
     mounted: function () {
@@ -86,12 +90,10 @@
             return this.$message.warning("请先保存当前编辑项");
           }
         }
-        let editableParagraph = {
-          "_content": null,
-          "_editable": true
-        };
-        this.paragraphs.push(editableParagraph);
-        this.newParagraph = JSON.parse(JSON.stringify(editableParagraph));
+        this.currentEditableParagraph = JSON.parse(JSON.stringify(this.initTempParagraph));
+        this.currentEditableParagraph._editable = true
+        this.paragraphs.push(this.currentEditableParagraph);
+        this.addNewParagraphFlag = true
       },
       //修改
       modifyParagraph(row, index, cg) {
@@ -102,29 +104,58 @@
             return false;
           }
         }
+
         //是否是取消操作
         if (!cg) {
-          if (!this.newParagraph.id) {
-            this.paragraphs.splice(index, 1);
+          if (this.addNewParagraphFlag) {
+            if (!this.currentEditableParagraph.id) {
+              this.paragraphs.splice(index, 1);
+            }
+            this.addNewParagraphFlag = false
           }
           return row._editable = !row._editable;
         }
+
+        if (this.currentEditableParagraph._editable) {
+          this.$message.warning("请先保存当前编辑项");
+          return false;
+        }
         //提交数据
         if (row._editable) {
-          //项目是模拟请求操作  自己修改下
-          (function () {
-            let data = JSON.parse(JSON.stringify(this.newParagraph));
-            for (let k in data) row[k] = data[k];
-            this.$message({
-              type: 'success',
-              message: "保存成功!"
-            });
-            //然后这边重新读取表格数据
-            this.readMasterUser();
-            row._editable = false;
-          })();
+          this.paragraphs[index] = this.currentEditableParagraph;
+          let contents = []
+          for (let paragraph of this.paragraphs) {
+            contents.push(paragraph._content);
+          }
+          requestUpdateArticleApi(this.articleId, {paragraphs: contents}).then((res) => {
+            if (res.meta.code === 200) {
+              this.currentEditableParagraph = JSON.parse(JSON.stringify(this.initTempParagraph));
+              this.addNewParagraphFlag = false
+              this.$message({
+                type: 'success',
+                message: "保存成功!"
+              });
+              //然后这边重新读取表格数据
+              this.readMasterUser();
+              row._editable = false;
+            } else {
+              this.$message.error('参数错误')
+            }
+          });
+//          //项目是模拟请求操作  自己修改下
+//          (function () {
+//            let data = JSON.parse(JSON.stringify(this.currentEditableParagraph));
+//            for (let k in data) row[k] = data[k];
+//            this.$message({
+//              type: 'success',
+//              message: "保存成功!"
+//            });
+//            //然后这边重新读取表格数据
+//            this.readMasterUser();
+//            row._editable = false;
+//          })();
         } else {
-          this.newParagraph = JSON.parse(JSON.stringify(row));
+          this.currentEditableParagraph = JSON.parse(JSON.stringify(row));
           row._editable = true;
         }
       },

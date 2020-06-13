@@ -5,7 +5,7 @@
         <el-col :span="22" style="padding-right: 10px">
           <div>
             <el-input
-              @keyup.enter.native="onSearch()"
+              @keyup.enter.native="onBookSearch()"
               placeholder="Please input"
               v-model="searchKeyword" class="input-with-select">
               <el-button slot="append" icon="el-icon-search"></el-button>
@@ -13,7 +13,7 @@
           </div>
         </el-col>
         <el-col :span="2">
-          <el-button @click="openEditView(-1,'')" type="primary" style="width: 100%">新增图书</el-button>
+          <el-button @click="openEditBookView(-1,'')" type="primary" style="width: 100%">新增图书</el-button>
         </el-col>
       </el-row>
     </el-header>
@@ -33,7 +33,7 @@
             label="书名"
             width="180">
             <template slot-scope="scope">
-              <router-link :to="{path:'bookDetail',query:{bookId:scope.row.id}}">
+              <router-link :to="{path:'article',query:{bookId:scope.row.id}}">
                 <div>
                   <span>{{scope.row.title}}</span>
                 </div>
@@ -45,7 +45,7 @@
             label="副题"
             width="180">
             <template slot-scope="scope">
-              <router-link :to="{path:'bookDetail',query:{bookId:scope.row.id}}">
+              <router-link :to="{path:'article',query:{bookId:scope.row.id}}">
                 <div>
                   <span>{{scope.row.subTitle}}</span>
                 </div>
@@ -79,36 +79,38 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="220">
+            width="320">
             <template slot-scope="scope">
               <el-button @click="doRequestRecommendBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.recommend == null || scope.row.recommend == -1">推荐
+                         class="actionButton" v-if="scope.row.recommend == null || scope.row.recommend == -1">推荐
               </el-button>
               <el-button @click="doRequestRecommendCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.recommend == 1">取消推荐
+                         class="actionButton" v-if="scope.row.recommend == 1">取消推荐
               </el-button>
               <el-button @click="doRequestVisibleBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.visibility == -1">取消隐藏
+                         class="actionButton" v-if="scope.row.visibility == -1">取消隐藏
               </el-button>
               <el-button @click="doRequestVisibleCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.visibility == null || scope.row.visibility == 1">隐藏
+                         class="actionButton" v-if="scope.row.visibility == null || scope.row.visibility == 1">隐藏
               </el-button>
               <el-button @click="doRequestDeleteBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.delStatus == null || scope.row.delStatus == -1">删除
+                         class="actionButton" v-if="scope.row.delStatus == null || scope.row.delStatus == -1">删除
               </el-button>
               <el-button @click="doRequestDeleteCancelBooks(scope.$index,scope.row.id)" type="text" size="small"
-                         v-if="scope.row.delStatus == 1">取消删除
+                         class="actionButton" v-if="scope.row.delStatus == 1">取消删除
               </el-button>
-              <el-button @click="openEditView(scope.$index,scope.row)" type="text" size="small">编辑</el-button>
+              <el-button @click="openEditBookView(scope.$index,scope.row)" type="text" size="small" class="actionButton">
+                编辑
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </template>
       <el-dialog
         title="提示"
-        :visible.sync="editViewDialogVisible"
+        :visible.sync="editBookViewDialogVisible"
         width="30%"
-        :before-close="closeEditView">
+        :before-close="closeEditBookView">
         <template>
           <el-input v-show="false" v-model="currentEditBook.id">
           </el-input>
@@ -144,8 +146,8 @@
           </el-input>
         </template>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="closeEditView()">取 消</el-button>
-          <el-button type="primary" @click="commitEditView()">确 定</el-button>
+          <el-button @click="closeEditBookView()">取 消</el-button>
+          <el-button type="primary" @click="commitEditBookView()">确 定</el-button>
         </span>
       </el-dialog>
     </el-main>
@@ -186,7 +188,7 @@
         pageIndex: 1,
         pageSize: 12,
         total: 0,
-        editViewDialogVisible: false,
+        editBookViewDialogVisible: false,
         currentEditBook: {},
         options: [{
           value: '无',
@@ -209,7 +211,7 @@
       this.doRequestBooks(this.pageIndex, this.pageSize)
     },
     methods: {
-      openEditView(index, editBook){
+      openEditBookView(index, editBook){
         if (index == -1) {
           this.$set(this.currentEditBook, "title", "")
           this.$set(this.currentEditBook, "subTitle", "")
@@ -222,18 +224,18 @@
           this.currentEditBook = JSON.parse(JSON.stringify(editBook))
         }
         this.$set(this.currentEditBook, "_index", index)
-        this.editViewDialogVisible = true
+        this.editBookViewDialogVisible = true
       },
-      closeEditView() {
+      closeEditBookView() {
         this.$confirm('确认关闭？')
           .then(_ => {
-            this.editViewDialogVisible = false
+            this.editBookViewDialogVisible = false
           })
           .catch(_ => {
           });
       },
-      commitEditView(){
-        if(this.currentEditBook._index == -1) {
+      commitEditBookView(){
+        if (this.currentEditBook._index == -1) {
           this.doRequestCreateBook()
         } else {
           this.doRequestUpdateBook()
@@ -263,7 +265,7 @@
       doRequestCreateBook(){
         requestCreateBookApi(this.currentEditBook).then((res) => {
           if (res.meta.code === 200) {
-            this.editViewDialogVisible = false;
+            this.editBookViewDialogVisible = false;
             this.$message({
               message: '新增' + res.data + '行',
               type: 'success'
@@ -277,7 +279,7 @@
       doRequestUpdateBook(){
         requestUpdateBookApi(this.currentEditBook.id, this.currentEditBook).then((res) => {
           if (res.meta.code === 200) {
-            this.editViewDialogVisible = false;
+            this.editBookViewDialogVisible = false;
             this.$message({
               message: '更新' + res.data + '行',
               type: 'success'
@@ -384,7 +386,16 @@
             this.$message.error('参数错误')
           }
         })
-      }
+      },
+      onBookSearch: function (e) {
+        var e = window.event || e;
+        var keyCode = e.keyCode || e.which || e.charCode;
+        if (keyCode == 13 && this.input) {
+          this.doBookSearch(this.input, this.index - 1, this.size)
+        }
+      },
+      doBookSearch: function (keyword, index, size) {
+      },
     }
   }
 </script>
@@ -396,5 +407,9 @@
 
   .el-input-group__prepend {
     width: 100px;
+  }
+
+  .actionButton {
+    width: 60px;
   }
 </style>

@@ -8,6 +8,13 @@ export function requestCreateBookApi(editBook) {
   })
 }
 
+export function requestBookApi(bookId) {
+  return request({
+    url: '/book/api/admin/book/' + bookId,
+    method: 'get'
+  })
+}
+
 export function requestBooksApi(index, size) {
   return request({
     url: '/book/api/admin/book?index=' + index + '&size=' + size,

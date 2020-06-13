@@ -3,7 +3,7 @@
     <el-header>
       <div style="margin-top: 10px;">
         <el-input
-          @keyup.enter.native="onSearch()"
+          @keyup.enter.native="onBookSearch()"
           placeholder="Please input"
           v-model="input" class="input-with-select">
           <el-button slot="append" icon="el-icon-search"></el-button>
@@ -25,14 +25,14 @@
     mounted: function () {
     },
     methods: {
-      onSearch: function (e) {
+      onBookSearch: function (e) {
         var e = window.event || e;
         var keyCode = e.keyCode || e.which || e.charCode;
         if (keyCode == 13 && this.input) {
-          this.doSearch(this.input, this.index - 1, this.size)
+          this.doBookSearch(this.input, this.index - 1, this.size)
         }
       },
-      doSearch: function (keyword, index, size) {
+      doBookSearch: function (keyword, index, size) {
       },
     }
   }

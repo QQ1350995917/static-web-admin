@@ -5,7 +5,7 @@
         <el-col :span="22" style="padding-right: 10px">
           <div>
             <el-input
-              @keyup.enter.native="onBookSearch()"
+              @keyup.enter.native="onArticleSearch()"
               placeholder="Please input"
               v-model="searchKeyword" class="input-with-select">
               <el-button slot="append" icon="el-icon-search"></el-button>
@@ -211,6 +211,13 @@
       }
     },
     methods: {
+      onArticleSearch(){
+        var e = window.event || e;
+        var keyCode = e.keyCode || e.which || e.charCode;
+        if (keyCode == 13 && this.searchKeyword) {
+          this.$router.push({path: '/book/search?type=article&keyword=' + this.searchKeyword});
+        }
+      },
       openEditBookView(index, editBookTable){
         if (index == -1) {
           this.$set(this.currentEditBookTable, "bookId", this.bookId)

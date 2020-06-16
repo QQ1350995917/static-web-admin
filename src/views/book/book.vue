@@ -390,11 +390,9 @@
       onBookSearch: function (e) {
         var e = window.event || e;
         var keyCode = e.keyCode || e.which || e.charCode;
-        if (keyCode == 13 && this.input) {
-          this.doBookSearch(this.input, this.index - 1, this.size)
+        if (keyCode == 13 && this.searchKeyword) {
+          this.$router.push({path: '/book/search?type=book&keyword=' + this.searchKeyword});
         }
-      },
-      doBookSearch: function (keyword, index, size) {
       },
     }
   }

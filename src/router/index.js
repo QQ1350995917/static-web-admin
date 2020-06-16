@@ -86,7 +86,7 @@ export const constantRoutes = [
   {
     path: '/book',
     component: Layout,
-    redirect: 'search',
+    redirect: 'book',
     name: 'Book',
     meta: {
       title: 'Book',
@@ -117,6 +117,30 @@ export const constantRoutes = [
         name: 'Book-ArticleDetail',
         meta: { title: 'ArticleDetail', icon: 'documentation' },
         hidden: true
+      },
+    ]
+  },
+  {
+    path: '/search',
+    component: Layout,
+    redirect: 'search',
+    name: 'Search',
+    meta: {
+      title: 'Search',
+      icon: 'documentation'
+    },
+    children: [
+      {
+        path: 'metadata',
+        component: () => import('@/views/search/metadata'),
+        name: 'Search-Metadata',
+        meta: { title: 'Metadata', icon: 'documentation' }
+      },
+      {
+        path: 'document',
+          component: () => import('@/views/search/document'),
+        name: 'Search-Document',
+        meta: { title: 'Document', icon: 'documentation' }
       },
     ]
   },

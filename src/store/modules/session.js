@@ -1,4 +1,4 @@
-import { loginApi, logoutApi, getInfoApi } from '@/api/session'
+import { loginPageInit,loginApi, logoutApi, getInfoApi } from '@/api/session'
 import { getToken,getUserId, setToken,setUserId, removeToken,removeUserId } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -29,6 +29,18 @@ const mutations = {
 }
 
 const actions = {
+
+  init(){
+    return new Promise((resolve, reject) => {
+      loginPageInit().then(response => {
+    resolve()
+  }).catch(error => {
+      console.log("error" + error)
+    reject(error)
+  })
+
+      })
+  },
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo

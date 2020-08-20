@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function loginPageInit() {
+  return request({
+    url: '/account/api/admin/session/init',
+    method: 'get'
+  })
+}
+
 export function loginApi(data) {
   return request({
     url: '/account/api/admin/session',

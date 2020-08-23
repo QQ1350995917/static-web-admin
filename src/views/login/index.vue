@@ -115,23 +115,23 @@
       }
     },
     watch: {
-      $route: {
-        handler: function (route) {
-          this.redirect = route.query && route.query.redirect
-        },
-        immediate: true
-      }
+//      $route: {
+//        handler: function (route) {
+//          this.redirect = route.query && route.query.redirect
+//        },
+//        immediate: true
+//      }
     },
     created() {
       // window.addEventListener('storageBO', this.afterQRScan)
     },
     mounted() {
-      this.pageInit();
-      if (this.loginForm.username === '') {
-        this.$refs.username.focus()
-      } else if (this.loginForm.password === '') {
-        this.$refs.password.focus()
-      }
+//      this.pageInit();
+//      if (this.loginForm.username === '') {
+//        this.$refs.username.focus()
+//      } else if (this.loginForm.password === '') {
+//        this.$refs.password.focus()
+//      }
     },
     destroyed() {
       // window.removeEventListener('storageBO', this.afterQRScan)

@@ -60,28 +60,28 @@ const actions = {
 
   // get user info
   getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfoApi().then(response => {
-        const data = response
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-        const { roles, name, avatar, introduction } = data.data
-        console.log(roles)
-        // roles must   be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
-        resolve(data.data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
+    // return new Promise((resolve, reject) => {
+    //   getInfoApi().then(response => {
+    //     const data = response
+    //     if (!data) {
+    //       reject('Verification failed, please Login again.')
+    //     }
+    //     const { roles, name, avatar, introduction } = data.data
+    //     console.log(roles)
+    //     // roles must   be a non-empty array
+    //     if (!roles || roles.length <= 0) {
+    //       reject('getInfo: roles must be a non-null array!')
+    //     }
+    //
+    //     commit('SET_ROLES', roles)
+    //     commit('SET_NAME', name)
+    //     commit('SET_AVATAR', avatar)
+    //     commit('SET_INTRODUCTION', introduction)
+    //     resolve(data.data)
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
   },
 
   // user logout

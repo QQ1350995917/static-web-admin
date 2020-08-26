@@ -7,12 +7,12 @@
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <lang-select class="set-language"/>
+        <lang-select class="set-language" />
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user"/>
+          <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
@@ -26,7 +26,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password"/>
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
@@ -39,7 +39,7 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
@@ -71,15 +71,16 @@
       <br>
       <br>
       <br>
-      <social-sign/>
+      <social-sign />
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import {validUsername} from '@/utils/validate'
+  import { validUsername } from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
+  import { setToken } from '@/utils/auth'
 
   export default {
     name: 'Login',
@@ -101,8 +102,8 @@
       }
       return {
         loginForm: {
-          username: 'admin',
-          password: '123456'
+          username: 'luoguanzhong',
+          password: 'luoguanzhong'
         },
         loginRules: {
           username: [{required: true, trigger: 'blur', validator: validateUsername}],
@@ -115,40 +116,41 @@
       }
     },
     watch: {
-//      $route: {
-//        handler: function (route) {
-//          this.redirect = route.query && route.query.redirect
-//        },
-//        immediate: true
-//      }
+      $route: {
+        handler: function (route) {
+          this.redirect = route.query && route.query.redirect
+        },
+        immediate: true
+      }
     },
     created() {
       // window.addEventListener('storageBO', this.afterQRScan)
     },
     mounted() {
-//      this.pageInit();
-//      if (this.loginForm.username === '') {
-//        this.$refs.username.focus()
-//      } else if (this.loginForm.password === '') {
-//        this.$refs.password.focus()
-//      }
+      this.sessionInit();
+      if (this.loginForm.username === '') {
+        this.$refs.username.focus()
+      } else if (this.loginForm.password === '') {
+        this.$refs.password.focus()
+      }
     },
     destroyed() {
       // window.removeEventListener('storageBO', this.afterQRScan)
     },
     methods: {
-      pageInit(){
-          console.log("init start")
+      sessionInit(){
         this.loading = true
         this.$store.dispatch('session/init')
-          .then(() => {
-            console.log("init ok")
+          .then((response) => {
+            if (response.meta.code == 200) {
+              setToken(response.data.token);
+            }
             this.loading = false
           })
           .catch((error) => {
-            console.log("init error")
+            console.log("session init error " + error)
             this.loading = false
-        })
+          })
       },
       showPwd() {
         if (this.passwordType === 'password') {

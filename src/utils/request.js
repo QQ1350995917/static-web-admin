@@ -1,18 +1,16 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken,getUserId } from '@/utils/auth'
+import { getToken,getUserId,getAccountId} from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // api 的 base_url
-  withCredentials: true, // 跨域请求时发送 cookies
-  timeout: 12000, // request timeout
-  headers: {
-    'x-token': getToken(),
-    'x-uid': getUserId(),
-    'x-os': 'web',
-    'x-vc': '1.0.0-SNAPSHOT'},
+  // api 的 base_url
+  baseURL: process.env.VUE_APP_BASE_API,
+  // 跨域请求时发送 cookies
+  withCredentials: false,
+  // request timeout
+  timeout: 1200000
 })
 
 // request interceptor
@@ -24,8 +22,11 @@ service.interceptors.request.use(
     //   // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['x-token'] = getToken()
       config.headers['x-uid'] = getUserId()
+      config.headers['x-aid'] = getAccountId()
       config.headers['x-os'] = 'web'
-      config.headers['x-vc'] = '1.0.0-SNAPSHOT'
+      config.headers['x-cv'] = '1.0.0-SNAPSHOT'
+      config.headers['x-sv'] = '1.0.0-SNAPSHOT'
+      config.headers['x-dt'] = new Date().getTime()
     // } else {
     //   console.log("request without token ")
     // }
@@ -34,7 +35,7 @@ service.interceptors.request.use(
   error => {
     // Do something with request error
     console.log(error) // for debug
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 

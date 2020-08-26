@@ -33,20 +33,20 @@ const actions = {
   init(){
     return new Promise((resolve, reject) => {
       loginPageInit().then(response => {
-    resolve()
+    resolve(response)
   }).catch(error => {
       console.log("error" + error)
     reject(error)
   })
-
-      })
+  })
   },
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      loginApi({ loginName: username.trim(), loginPassword: password }).then(response => {
+      loginApi({ loginName: username.trim(), loginPwd: password.trim() }).then(response => {
         // const { data } = response
+        console.log(response)
         commit('SET_TOKEN', response.data.token)
         setToken(response.data.token)
         setUserId(response.data.uid)

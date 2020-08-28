@@ -7,6 +7,13 @@ export function loginPageInit() {
   })
 }
 
+export function refreshCaptcha(){
+  return request({
+    url: '/account/api/admin/session/captcha',
+    method: 'get'
+  })
+}
+
 export function loginApi(data) {
   return request({
     url: '/account/api/admin/session',

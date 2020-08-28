@@ -2,17 +2,16 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on"
              label-position="left">
-
       <div class="title-container">
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <lang-select class="set-language" />
+        <lang-select class="set-language"/>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
         <el-input
           ref="username"
@@ -26,7 +25,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="password"/>
         </span>
         <el-input
           :key="passwordType"
@@ -39,7 +38,23 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+        </span>
+      </el-form-item>
+
+      <el-form-item prop="captcha" v-if="captchaRequired">
+        <span class="svg-container">
+          <svg-icon icon-class="password"/>
+        </span>
+        <el-input
+          ref="captcha"
+          name="captcha"
+          v-model="loginForm.captchaExpect"
+          type="text"
+          style="width:20%"
+        />
+        <span class="svg-container">
+          <img :src="captcha" @click="refreshCaptcha" style="cursor: pointer;">
         </span>
       </el-form-item>
 
@@ -71,16 +86,16 @@
       <br>
       <br>
       <br>
-      <social-sign />
+      <social-sign/>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import { validUsername } from '@/utils/validate'
+  import {validUsername} from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
-  import { setToken } from '@/utils/auth'
+  import {setToken} from '@/utils/auth'
 
   export default {
     name: 'Login',
@@ -100,19 +115,35 @@
           callback()
         }
       }
+
+      const validateCaptcha = (rule, value, callback) => {
+        if (this.captchaRequired) {
+          if (value == undefined || value.length < 1) {
+            callback(new Error('The captcha can not be null'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      }
       return {
         loginForm: {
           username: 'luoguanzhong',
-          password: 'luoguanzhong'
+          password: 'luoguanzhong11',
+          captchaExpect: ''
         },
         loginRules: {
           username: [{required: true, trigger: 'blur', validator: validateUsername}],
-          password: [{required: true, trigger: 'blur', validator: validatePassword}]
+          password: [{required: true, trigger: 'blur', validator: validatePassword}],
+          captchaExpect: [{required: this.captchaRequired, trigger: 'blur', validator: validateCaptcha}]
         },
         passwordType: 'password',
         loading: false,
         showDialog: false,
-        redirect: undefined
+        redirect: undefined,
+        captchaRequired: false,
+        captcha: ''
       }
     },
     watch: {
@@ -132,25 +163,42 @@
         this.$refs.username.focus()
       } else if (this.loginForm.password === '') {
         this.$refs.password.focus()
+      } else if (this.captchaRequired && this.loginForm.captcha === '') {
+        this.$refs.captcha.focus()
       }
     },
     destroyed() {
       // window.removeEventListener('storageBO', this.afterQRScan)
     },
     methods: {
-      sessionInit(){
+      sessionInit() {
         this.loading = true
         this.$store.dispatch('session/init')
           .then((response) => {
             if (response.meta.code == 200) {
               setToken(response.data.token);
+              this.captchaRequired = response.data.captchaRequired;
+              this.refreshCaptcha();
             }
             this.loading = false
-          })
-          .catch((error) => {
-            console.log("session init error " + error)
+          }).catch((error) => {
+          this.loading = false
+        })
+      },
+      refreshCaptcha() {
+        if (this.captchaRequired) {
+          this.loading = true
+          this.$store.dispatch('session/captcha')
+            .then((response) => {
+              console.log(response)
+              if (response.meta.code == 200) {
+                this.captcha = response.data.base64;
+              }
+              this.loading = false
+            }).catch((error) => {
             this.loading = false
           })
+        }
       },
       showPwd() {
         if (this.passwordType === 'password') {
@@ -167,8 +215,13 @@
           if (valid) {
             this.loading = true
             this.$store.dispatch('session/login', this.loginForm)
-              .then(() => {
-                this.$router.push({path: this.redirect || '/'})
+              .then((response) => {
+                if (response.meta.code == 200) {
+                  this.$router.push({path: this.redirect || '/'})
+                } else if (response.meta.code == 401) {
+                  this.loginForm.captchaExpect = ''
+                  this.refreshCaptcha()
+                }
                 this.loading = false
               })
               .catch((error) => {
@@ -203,6 +256,10 @@
 </script>
 
 <style lang="scss">
+  .captchaInput {
+    width: 35%;
+  }
+
   /* 修复input 背景不协调 和光标变色 */
   /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 

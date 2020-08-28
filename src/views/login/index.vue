@@ -6,12 +6,12 @@
         <h3 class="title">
           {{ $t('login.title') }}
         </h3>
-        <lang-select class="set-language"/>
+        <lang-select class="set-language" />
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user"/>
+          <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
@@ -25,7 +25,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password"/>
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
@@ -38,13 +38,13 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"/>
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
       <el-form-item prop="captcha" v-if="captchaRequired">
         <span class="svg-container">
-          <svg-icon icon-class="password"/>
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           ref="captcha"
@@ -53,8 +53,8 @@
           type="text"
           style="width:20%"
         />
-        <span class="svg-container">
-          <img :src="captcha" @click="refreshCaptcha" style="cursor: pointer;">
+        <span class="svg-container" style="height:49px;width:71%;padding: 0px;float:right">
+          <img :src="captcha" mode="widthFix" @click="refreshCaptcha" style="height:100%; float: right;cursor: pointer;">
         </span>
       </el-form-item>
 
@@ -86,16 +86,16 @@
       <br>
       <br>
       <br>
-      <social-sign/>
+      <social-sign />
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import {validUsername} from '@/utils/validate'
+  import { validUsername } from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
-  import {setToken} from '@/utils/auth'
+  import { setToken } from '@/utils/auth'
 
   export default {
     name: 'Login',
@@ -130,7 +130,7 @@
       return {
         loginForm: {
           username: 'luoguanzhong',
-          password: 'luoguanzhong11',
+          password: 'luoguanzhong',
           captchaExpect: ''
         },
         loginRules: {
@@ -220,13 +220,13 @@
                   this.$router.push({path: this.redirect || '/'})
                 } else if (response.meta.code == 401) {
                   this.loginForm.captchaExpect = ''
+                  this.captchaRequired = response.data.session.captchaRequired
                   this.refreshCaptcha()
                 }
                 this.loading = false
-              })
-              .catch((error) => {
-                this.loading = false
-              })
+              }).catch((error) => {
+              this.loading = false
+            })
           } else {
             console.log('error submit!!')
             return false

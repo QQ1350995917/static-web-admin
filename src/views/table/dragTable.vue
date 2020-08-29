@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/book'
+import { fetchList } from '@/api/article'
 import Sortable from 'sortablejs'
 
 export default {
@@ -82,7 +82,7 @@ export default {
     return {
       list: null,
       total: null,
-      loading: true,
+      listLoading: true,
       listQuery: {
         page: 1,
         limit: 10
@@ -97,11 +97,11 @@ export default {
   },
   methods: {
     async getList() {
-      this.loading = true
+      this.listLoading = true
       const { data } = await fetchList(this.listQuery)
       this.list = data.items
       this.total = data.total
-      this.loading = false
+      this.listLoading = false
       this.oldList = this.list.map(v => v.id)
       this.newList = this.oldList.slice()
       this.$nextTick(() => {

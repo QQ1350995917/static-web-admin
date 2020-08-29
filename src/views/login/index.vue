@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on"
-             label-position="left">
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+
       <div class="title-container">
         <h3 class="title">
           {{ $t('login.title') }}
@@ -42,24 +42,7 @@
         </span>
       </el-form-item>
 
-      <el-form-item prop="captcha" v-if="captchaRequired">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          ref="captcha"
-          name="captcha"
-          v-model="loginForm.captchaExpect"
-          type="text"
-          style="width:20%"
-        />
-        <span class="svg-container" style="height:49px;width:71%;padding: 0px;float:right">
-          <img :src="captcha" mode="widthFix" @click="refreshCaptcha" style="height:100%; float: right;cursor: pointer;">
-        </span>
-      </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
-                 @click.native.prevent="handleLogin">
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
 
@@ -92,299 +75,243 @@
 </template>
 
 <script>
-  import { validUsername } from '@/utils/validate'
-  import LangSelect from '@/components/LangSelect'
-  import SocialSign from './socialsignin'
-  import { setAnonymousToken } from '@/utils/auth'
+import { validUsername } from '@/utils/validate'
+import LangSelect from '@/components/LangSelect'
+import SocialSign from './socialsignin'
 
-  export default {
-    name: 'Login',
-    components: {LangSelect, SocialSign},
-    data() {
-      const validateUsername = (rule, value, callback) => {
-        if (!validUsername(value)) {
-          callback(new Error('Please enter the correct user name'))
-        } else {
-          callback()
-        }
+export default {
+  name: 'Login',
+  components: { LangSelect, SocialSign },
+  data() {
+    const validateUsername = (rule, value, callback) => {
+      if (!validUsername(value)) {
+        callback(new Error('Please enter the correct user name'))
+      } else {
+        callback()
       }
-      const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error('The password can not be less than 6 digits'))
-        } else {
-          callback()
-        }
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('The password can not be less than 6 digits'))
+      } else {
+        callback()
       }
-
-      const validateCaptcha = (rule, value, callback) => {
-        if (this.captchaRequired) {
-          if (value == undefined || value.length < 1) {
-            callback(new Error('The captcha can not be null'))
-          } else {
-            callback()
-          }
-        } else {
-          callback()
-        }
+    }
+    return {
+      loginForm: {
+        username: 'admin',
+        password: '111111'
+      },
+      loginRules: {
+        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+      },
+      passwordType: 'password',
+      loading: false,
+      showDialog: false,
+      redirect: undefined
+    }
+  },
+  watch: {
+    $route: {
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect
+      },
+      immediate: true
+    }
+  },
+  created() {
+    // window.addEventListener('storage', this.afterQRScan)
+  },
+  mounted() {
+    if (this.loginForm.username === '') {
+      this.$refs.username.focus()
+    } else if (this.loginForm.password === '') {
+      this.$refs.password.focus()
+    }
+  },
+  destroyed() {
+    // window.removeEventListener('storage', this.afterQRScan)
+  },
+  methods: {
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
       }
-      return {
-        loginForm: {
-          username: 'luoguanzhong',
-          password: 'luoguanzhong',
-          captchaExpect: ''
-        },
-        loginRules: {
-          username: [{required: true, trigger: 'blur', validator: validateUsername}],
-          password: [{required: true, trigger: 'blur', validator: validatePassword}],
-          captchaExpect: [{required: this.captchaRequired, trigger: 'blur', validator: validateCaptcha}]
-        },
-        passwordType: 'password',
-        loading: false,
-        showDialog: false,
-        redirect: undefined,
-        captchaRequired: false,
-        captcha: ''
-      }
-    },
-    watch: {
-      $route: {
-        handler: function (route) {
-          this.redirect = route.query && route.query.redirect
-        },
-        immediate: true
-      }
-    },
-    created() {
-       window.addEventListener('storage', this.afterQRScan)
-    },
-    mounted() {
-      this.sessionInit();
-      if (this.loginForm.username === '') {
-        this.$refs.username.focus()
-      } else if (this.loginForm.password === '') {
+      this.$nextTick(() => {
         this.$refs.password.focus()
-      } else if (this.captchaRequired && this.loginForm.captcha === '') {
-        this.$refs.captcha.focus()
-      }
+      })
     },
-    destroyed() {
-       window.removeEventListener('storage', this.afterQRScan)
-    },
-    methods: {
-      sessionInit() {
-        this.loading = true
-        this.$store.dispatch('session/init')
-          .then((response) => {
-            if (response.meta.code == 200) {
-              setAnonymousToken(response.data.token);
-              this.captchaRequired = response.data.captchaRequired;
-              this.refreshCaptcha();
-            }
-            this.loading = false
-          }).catch(() => {
-          this.loading = false
-        })
-      },
-      refreshCaptcha() {
-        if (this.captchaRequired) {
+    handleLogin() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
           this.loading = true
-          this.$store.dispatch('session/captcha')
-            .then((response) => {
-              if (response.meta.code == 200) {
-                this.captcha = response.data.base64;
-              }
-              this.loading = false
-            }).catch(() => {
-            this.loading = false
-          })
-        }
-      },
-      showPwd() {
-        if (this.passwordType === 'password') {
-          this.passwordType = ''
-        } else {
-          this.passwordType = 'password'
-        }
-        this.$nextTick(() => {
-          this.$refs.password.focus()
-        })
-      },
-      handleLogin() {
-        this.$refs.loginForm.validate(valid => {
-          if (valid) {
-            this.loading = true
-            this.$store.dispatch('session/login', this.loginForm)
-              .then((response) => {
-                if (response.meta.code == 200) {
-                  this.$router.push({path: this.redirect || '/'})
-                } else if (response.meta.code == 417) {
-                  this.loginForm.captchaExpect = ''
-                  this.captchaRequired = response.data.session.captchaRequired
-                  this.refreshCaptcha()
-                }
-                this.loading = false
-              }).catch((error) => {
+          this.$store.dispatch('user/login', this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             })
-          } else {
-            return false
-          }
-        })
-      },
-       afterQRScan() {
-         if (e.key === 'x-admin-oauth-code') {
-           const code = getQueryObject(e.newValue)
-           const codeMap = {
-             wechat: 'code',
-             tencent: 'code'
-           }
-           const type = codeMap[this.auth_type]
-           const codeName = code[type]
-           if (codeName) {
-             this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-               this.$router.push({ path: this.redirect || '/' })
-             })
-           } else {
-             alert('第三方登录失败')
-           }
-         }
-       }
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
+    // afterQRScan() {
+    //   if (e.key === 'x-admin-oauth-code') {
+    //     const code = getQueryObject(e.newValue)
+    //     const codeMap = {
+    //       wechat: 'code',
+    //       tencent: 'code'
+    //     }
+    //     const type = codeMap[this.auth_type]
+    //     const codeName = code[type]
+    //     if (codeName) {
+    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+    //         this.$router.push({ path: this.redirect || '/' })
+    //       })
+    //     } else {
+    //       alert('第三方登录失败')
+    //     }
+    //   }
+    // }
   }
+}
 </script>
 
 <style lang="scss">
-  .captchaInput {
-    width: 35%;
+/* 修复input 背景不协调 和光标变色 */
+/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
+
+$bg:#283443;
+$light_gray:#fff;
+$cursor: #fff;
+
+@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
+  .login-container .el-input input {
+    color: $cursor;
   }
+}
 
-  /* 修复input 背景不协调 和光标变色 */
-  /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
+/* reset element-ui css */
+.login-container {
+  .el-input {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
 
-  $bg: #283443;
-  $light_gray: #fff;
-  $cursor: #fff;
-
-  @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-    .login-container .el-input input {
-      color: $cursor;
-    }
-  }
-
-  /* reset element-ui css */
-  .login-container {
-    .el-input {
-      display: inline-block;
+    input {
+      background: transparent;
+      border: 0px;
+      -webkit-appearance: none;
+      border-radius: 0px;
+      padding: 12px 5px 12px 15px;
+      color: $light_gray;
       height: 47px;
-      width: 85%;
+      caret-color: $cursor;
 
-      input {
-        background: transparent;
-        border: 0px;
-        -webkit-appearance: none;
-        border-radius: 0px;
-        padding: 12px 5px 12px 15px;
-        color: $light_gray;
-        height: 47px;
-        caret-color: $cursor;
-
-        &:-webkit-autofill {
-          box-shadow: 0 0 0px 1000px $bg inset !important;
-          -webkit-text-fill-color: $cursor !important;
-        }
+      &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-text-fill-color: $cursor !important;
       }
     }
-
-    .el-form-item {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
-      color: #454545;
-    }
   }
+
+  .el-form-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    color: #454545;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
-  $bg: #2d3a4b;
-  $dark_gray: #889aa4;
-  $light_gray: #eee;
+$bg:#2d3a4b;
+$dark_gray:#889aa4;
+$light_gray:#eee;
 
-  .login-container {
-    min-height: 100%;
-    width: 100%;
-    background-color: $bg;
+.login-container {
+  min-height: 100%;
+  width: 100%;
+  background-color: $bg;
+  overflow: hidden;
+
+  .login-form {
+    position: relative;
+    width: 520px;
+    max-width: 100%;
+    padding: 160px 35px 0;
+    margin: 0 auto;
     overflow: hidden;
+  }
 
-    .login-form {
-      position: relative;
-      width: 520px;
-      max-width: 100%;
-      padding: 160px 35px 0;
-      margin: 0 auto;
-      overflow: hidden;
-    }
+  .tips {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 10px;
 
-    .tips {
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 10px;
-
-      span {
-        &:first-of-type {
-          margin-right: 16px;
-        }
-      }
-    }
-
-    .svg-container {
-      padding: 6px 5px 6px 15px;
-      color: $dark_gray;
-      vertical-align: middle;
-      width: 30px;
-      display: inline-block;
-    }
-
-    .title-container {
-      position: relative;
-
-      .title {
-        font-size: 26px;
-        color: $light_gray;
-        margin: 0px auto 40px auto;
-        text-align: center;
-        font-weight: bold;
-      }
-
-      .set-language {
-        color: #fff;
-        position: absolute;
-        top: 3px;
-        font-size: 18px;
-        right: 0px;
-        cursor: pointer;
-      }
-    }
-
-    .show-pwd {
-      position: absolute;
-      right: 10px;
-      top: 7px;
-      font-size: 16px;
-      color: $dark_gray;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .thirdparty-button {
-      position: absolute;
-      right: 0;
-      bottom: 6px;
-    }
-
-    @media only screen and (max-width: 470px) {
-      .thirdparty-button {
-        display: none;
+    span {
+      &:first-of-type {
+        margin-right: 16px;
       }
     }
   }
+
+  .svg-container {
+    padding: 6px 5px 6px 15px;
+    color: $dark_gray;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+  }
+
+  .title-container {
+    position: relative;
+
+    .title {
+      font-size: 26px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .set-language {
+      color: #fff;
+      position: absolute;
+      top: 3px;
+      font-size: 18px;
+      right: 0px;
+      cursor: pointer;
+    }
+  }
+
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 16px;
+    color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .thirdparty-button {
+    position: absolute;
+    right: 0;
+    bottom: 6px;
+  }
+
+  @media only screen and (max-width: 470px) {
+    .thirdparty-button {
+      display: none;
+    }
+  }
+}
 </style>

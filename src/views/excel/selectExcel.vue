@@ -50,14 +50,14 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/book'
+import { fetchList } from '@/api/article'
 
 export default {
   name: 'SelectExcel',
   data() {
     return {
       list: null,
-      loading: true,
+      listLoading: true,
       multipleSelection: [],
       downloadLoading: false,
       filename: ''
@@ -68,10 +68,10 @@ export default {
   },
   methods: {
     fetchData() {
-      this.loading = true
+      this.listLoading = true
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
-        this.loading = false
+        this.listLoading = false
       })
     },
     handleSelectionChange(val) {

@@ -1,14 +1,5 @@
-import { loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi } from '@/api/session'
-import {
-  getToken,
-  getUserId,
-  setToken,
-  setUserId,
-  setAccountId,
-  removeAnonymousToken,
-  removeToken,
-  removeUserId
-} from '@/utils/auth'
+import { login, logout, getInfo } from '@/api/user'
+import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -16,7 +7,7 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: ['admin'],
+  roles: []
 }
 
 const mutations = {
@@ -38,60 +29,34 @@ const mutations = {
 }
 
 const actions = {
-  init() {
-    return new Promise((resolve, reject) => {
-      loginPageInit().then(response => {
-        resolve(response)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  captcha() {
-    return new Promise((resolve, reject) => {
-      refreshCaptcha().then(response => {
-        resolve(response)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
   // user login
-  login({commit}, userInfo) {
-    const {username, password, captchaExpect} = userInfo
+  login({ commit }, userInfo) {
+    const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      loginApi({
-        loginName: username.trim(),
-        loginPwd: password.trim(),
-        captcha: captchaExpect.trim()
-      }).then(response => {
-        if (response.meta.code == 200) {
-          commit('SET_TOKEN', response.data.session.token)
-          setToken(response.data.session.token)
-          setUserId(response.data.session.uid)
-          setAccountId(response.data.session.aid)
-          removeAnonymousToken();
-          resolve(response)
-        }
+      login({ username: username.trim(), password: password }).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve()
       }).catch(error => {
-        console.log("error" + error)
         reject(error)
       })
     })
   },
 
   // get user info
-  getInfo({commit, state}) {
+  getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfoApi().then(response => {
-        if (!response) {
+      getInfo(state.token).then(response => {
+        const { data } = response
+
+        if (!data) {
           reject('Verification failed, please Login again.')
         }
-        if (response.meta.code == 401) {
-          reject('Session timeout, please Login again.')
-        }
-        const {roles, name, avatar, introduction} = response.data
-        // roles must   be a non-empty array
+
+        const { roles, name, avatar, introduction } = data
+
+        // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
@@ -100,7 +65,7 @@ const actions = {
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
-        resolve(response.data)
+        resolve(data)
       }).catch(error => {
         reject(error)
       })
@@ -108,13 +73,12 @@ const actions = {
   },
 
   // user logout
-  logout({commit, state}) {
+  logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logoutApi(state.token).then(() => {
+      logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
-        removeUserId()
         resetRouter()
         resolve()
       }).catch(error => {
@@ -124,32 +88,29 @@ const actions = {
   },
 
   // remove token
-  resetToken({commit}) {
-    console.log("resetToken")
+  resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       removeToken()
-      removeUserId()
       resolve()
     })
   },
 
   // Dynamically modify permissions
-  changeRoles({commit, dispatch}, role) {
+  changeRoles({ commit, dispatch }, role) {
     return new Promise(async resolve => {
       const token = role + '-token'
 
       commit('SET_TOKEN', token)
       setToken(token)
-      setUserId("pwd-temp")
 
-      const {roles} = await dispatch('getInfo')
+      const { roles } = await dispatch('getInfo')
 
       resetRouter()
 
       // generate accessible routes map based on roles
-      const accessRoutes = await dispatch('permission/generateRoutes', roles, {root: true})
+      const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
 
       // dynamically add accessible routes
       router.addRoutes(accessRoutes)

@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/book'
+import { fetchList } from '@/api/article'
 import { parseTime } from '@/utils'
 
 export default {
@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       list: null,
-      loading: true,
+      listLoading: true,
       downloadLoading: false
     }
   },
@@ -63,10 +63,10 @@ export default {
   },
   methods: {
     fetchData() {
-      this.loading = true
+      this.listLoading = true
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
-        this.loading = false
+        this.listLoading = false
       })
     },
     handleDownload() {

@@ -25,7 +25,7 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     port: port,
-    open: false,
+    open: true,
     overlay: {
       warnings: false,
       errors: true
@@ -33,50 +33,13 @@ module.exports = {
     proxy: {
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      // [process.env.VUE_APP_BASE_API]: {
-      //   target: `http://localhost:${port}/mock`,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     ['^' + process.env.VUE_APP_BASE_API]: ''
-      //   },
-      //   onProxyReq: function (proxyReq, req, res) {
-      //     //实在不知道代理后的路径，可以在这里打印出出来看看
-      //     console.log("原路径1：" + req.originalUrl, "代理路径1：" + req.path)
-      //   }
-      // },
-      // '/api/**': {
-      //   target: `http://localhost:${port}/mock`,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/api': '/'
-      //   },
-      //   onProxyReq: function (proxyReq, req, res) {
-      //     //实在不知道代理后的路径，可以在这里打印出出来看看
-      //     console.log("原路径2：" + req.originalUrl, "代理路径2：" + req.path)
-      //   }
-      // },
-      '/account': {
-        target: `http://localhost:11221`,
+      [process.env.VUE_APP_BASE_API]: {
+        target: `http://localhost:${port}/mock`,
         changeOrigin: true,
         pathRewrite: {
-          '^/account': '/account'
-        },
-        onProxyReq: function (proxyReq, req, res) {
-          //实在不知道代理后的路径，可以在这里打印出出来看看
-          console.log("原路径：" + req.originalUrl, "代理路径：" + req.path)
+          ['^' + process.env.VUE_APP_BASE_API]: ''
         }
-      },
-      '/book': {
-        target: `http://localhost:11221`,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/book': '/book'
-        },
-        onProxyReq: function (proxyReq, req, res) {
-          //实在不知道代理后的路径，可以在这里打印出出来看看
-          console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
-        }
-      },
+      }
     },
     after(app) {
       require('@babel/register')

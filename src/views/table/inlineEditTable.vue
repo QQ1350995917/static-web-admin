@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/book'
+import { fetchList } from '@/api/article'
 
 export default {
   name: 'InlineEditTable',
@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       list: null,
-      loading: true,
+      listLoading: true,
       listQuery: {
         page: 1,
         limit: 10
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     async getList() {
-      this.loading = true
+      this.listLoading = true
       const { data } = await fetchList(this.listQuery)
       const items = data.items
       this.list = items.map(v => {
@@ -97,7 +97,7 @@ export default {
         v.originalTitle = v.title //  will be used when user click the cancel botton
         return v
       })
-      this.loading = false
+      this.listLoading = false
     },
     cancelEdit(row) {
       row.title = row.originalTitle

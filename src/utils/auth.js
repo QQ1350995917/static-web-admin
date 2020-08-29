@@ -1,8 +1,21 @@
 import Cookies from 'js-cookie'
 
+const anonymousTokenKey = 'Admin-Anonymous-Token'
 const tokenKey = 'Admin-Token'
 const userIdKey = 'Admin-User-Id'
 const accountIdKey = 'Admin-Account-Id'
+
+export function getAnonymousToken() {
+  return Cookies.get(anonymousTokenKey) == undefined ? '' : Cookies.get(anonymousTokenKey);
+}
+
+export function setAnonymousToken(anonymousToken) {
+  return Cookies.set(anonymousTokenKey,anonymousToken);
+}
+
+export function removeAnonymousToken() {
+  return Cookies.remove(anonymousTokenKey);
+}
 
 export function getToken() {
   return Cookies.get(tokenKey) == undefined ? '' : Cookies.get(tokenKey);

@@ -1,13 +1,22 @@
-import {loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi} from '@/api/session'
-import {getToken, getUserId, setToken, setUserId, removeToken, removeUserId} from '@/utils/auth'
-import router, {resetRouter} from '@/router'
+import { loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi } from '@/api/session'
+import {
+  getToken,
+  getUserId,
+  setToken,
+  setUserId,
+  setAccountId,
+  removeAnonymousToken,
+  removeToken,
+  removeUserId
+} from '@/utils/auth'
+import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
   introduction: '',
-  roles: [],
+  roles: ['admin'],
 }
 
 const mutations = {
@@ -51,13 +60,19 @@ const actions = {
   login({commit}, userInfo) {
     const {username, password, captchaExpect} = userInfo
     return new Promise((resolve, reject) => {
-      loginApi({loginName: username.trim(), loginPwd: password.trim(), captcha: captchaExpect.trim()}).then(response => {
-        // const { data } = response
-        // commit('SET_TOKEN', response.data.token)
-        // setToken(response.data.token)
-        // setUserId(response.data.uid)
-        // setAccountId(response.data.aid)
-        resolve(response)
+      loginApi({
+        loginName: username.trim(),
+        loginPwd: password.trim(),
+        captcha: captchaExpect.trim()
+      }).then(response => {
+        if (response.meta.code == 200) {
+          commit('SET_TOKEN', response.data.session.token)
+          setToken(response.data.session.token)
+          setUserId(response.data.session.uid)
+          setAccountId(response.data.session.aid)
+          removeAnonymousToken();
+          resolve(response)
+        }
       }).catch(error => {
         console.log("error" + error)
         reject(error)
@@ -67,28 +82,29 @@ const actions = {
 
   // get user info
   getInfo({commit, state}) {
-    // return new Promise((resolve, reject) => {
-    //   getInfoApi().then(response => {
-    //     const data = response
-    //     if (!data) {
-    //       reject('Verification failed, please Login again.')
-    //     }
-    //     const { roles, name, avatar, introduction } = data.data
-    //     console.log(roles)
-    //     // roles must   be a non-empty array
-    //     if (!roles || roles.length <= 0) {
-    //       reject('getInfo: roles must be a non-null array!')
-    //     }
-    //
-    //     commit('SET_ROLES', roles)
-    //     commit('SET_NAME', name)
-    //     commit('SET_AVATAR', avatar)
-    //     commit('SET_INTRODUCTION', introduction)
-    //     resolve(data.data)
-    //   }).catch(error => {
-    //     reject(error)
-    //   })
-    // })
+    return new Promise((resolve, reject) => {
+      getInfoApi().then(response => {
+        if (!response) {
+          reject('Verification failed, please Login again.')
+        }
+        if (response.meta.code == 401) {
+          reject('Session timeout, please Login again.')
+        }
+        const {roles, name, avatar, introduction} = response.data
+        // roles must   be a non-empty array
+        if (!roles || roles.length <= 0) {
+          reject('getInfo: roles must be a non-null array!')
+        }
+
+        commit('SET_ROLES', roles)
+        commit('SET_NAME', name)
+        commit('SET_AVATAR', avatar)
+        commit('SET_INTRODUCTION', introduction)
+        resolve(response.data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   },
 
   // user logout
@@ -109,6 +125,7 @@ const actions = {
 
   // remove token
   resetToken({commit}) {
+    console.log("resetToken")
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])

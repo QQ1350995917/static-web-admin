@@ -95,7 +95,7 @@
   import { validUsername } from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
-  import { setToken } from '@/utils/auth'
+  import { setAnonymousToken } from '@/utils/auth'
 
   export default {
     name: 'Login',
@@ -155,7 +155,7 @@
       }
     },
     created() {
-      // window.addEventListener('storageBO', this.afterQRScan)
+       window.addEventListener('storage', this.afterQRScan)
     },
     mounted() {
       this.sessionInit();
@@ -168,7 +168,7 @@
       }
     },
     destroyed() {
-      // window.removeEventListener('storageBO', this.afterQRScan)
+       window.removeEventListener('storage', this.afterQRScan)
     },
     methods: {
       sessionInit() {
@@ -176,12 +176,12 @@
         this.$store.dispatch('session/init')
           .then((response) => {
             if (response.meta.code == 200) {
-              setToken(response.data.token);
+              setAnonymousToken(response.data.token);
               this.captchaRequired = response.data.captchaRequired;
               this.refreshCaptcha();
             }
             this.loading = false
-          }).catch((error) => {
+          }).catch(() => {
           this.loading = false
         })
       },
@@ -190,12 +190,11 @@
           this.loading = true
           this.$store.dispatch('session/captcha')
             .then((response) => {
-              console.log(response)
               if (response.meta.code == 200) {
                 this.captcha = response.data.base64;
               }
               this.loading = false
-            }).catch((error) => {
+            }).catch(() => {
             this.loading = false
           })
         }
@@ -218,7 +217,7 @@
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/'})
-                } else if (response.meta.code == 401) {
+                } else if (response.meta.code == 417) {
                   this.loginForm.captchaExpect = ''
                   this.captchaRequired = response.data.session.captchaRequired
                   this.refreshCaptcha()
@@ -228,29 +227,28 @@
               this.loading = false
             })
           } else {
-            console.log('error submit!!')
             return false
           }
         })
-      }
-      // afterQRScan() {
-      //   if (e.key === 'x-admin-oauth-code') {
-      //     const code = getQueryObject(e.newValue)
-      //     const codeMap = {
-      //       wechat: 'code',
-      //       tencent: 'code'
-      //     }
-      //     const type = codeMap[this.auth_type]
-      //     const codeName = code[type]
-      //     if (codeName) {
-      //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-      //         this.$router.push({ path: this.redirect || '/' })
-      //       })
-      //     } else {
-      //       alert('第三方登录失败')
-      //     }
-      //   }
-      // }
+      },
+       afterQRScan() {
+         if (e.key === 'x-admin-oauth-code') {
+           const code = getQueryObject(e.newValue)
+           const codeMap = {
+             wechat: 'code',
+             tencent: 'code'
+           }
+           const type = codeMap[this.auth_type]
+           const codeName = code[type]
+           if (codeName) {
+             this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+               this.$router.push({ path: this.redirect || '/' })
+             })
+           } else {
+             alert('第三方登录失败')
+           }
+         }
+       }
     }
   }
 </script>

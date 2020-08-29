@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken,getUserId,getAccountId} from '@/utils/auth'
+import { getAnonymousToken, getToken, getUserId, getAccountId } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
@@ -17,19 +17,20 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // Do something before request is sent
-    // if (store.getters.token) {
-    //   console.log("request with token ")
-    //   // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-      config.headers['x-token'] = getToken()
+    config.headers['x-os'] = 'web'
+    config.headers['x-cv'] = '1.0.0-SNAPSHOT'
+    config.headers['x-sv'] = '1.0.0-SNAPSHOT'
+    config.headers['x-dt'] = new Date().getTime()
+    if (store.getters.token) {
+      // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+      config.headers['x-token'] = getToken();
       config.headers['x-uid'] = getUserId()
       config.headers['x-aid'] = getAccountId()
-      config.headers['x-os'] = 'web'
-      config.headers['x-cv'] = '1.0.0-SNAPSHOT'
-      config.headers['x-sv'] = '1.0.0-SNAPSHOT'
-      config.headers['x-dt'] = new Date().getTime()
-    // } else {
-    //   console.log("request without token ")
-    // }
+    } else {
+      config.headers['x-token'] = getAnonymousToken();
+      config.headers['x-uid'] = 0
+      config.headers['x-aid'] = 0
+    }
     return config
   },
   error => {
@@ -44,7 +45,7 @@ service.interceptors.response.use(
   /**
    * If you want to get information such as headers or status
    * Please return  response => response
-  */
+   */
   /**
    * 下面的注释为通过在response里，自定义code来标示请求状态
    * 当code返回如下情况则说明权限有问题，登出并返回到登录页

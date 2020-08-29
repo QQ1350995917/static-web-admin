@@ -84,6 +84,44 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    name: 'User',
+    meta: {
+      title: 'User',
+      icon: 'user'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/user/list'),
+        name: 'UserList',
+        meta: { title: 'UserList', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/user/create'),
+        name: 'CreateUser',
+        meta: { title: 'CreateUser', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/user/edit'),
+        name: 'EditUser',
+        meta: { title: 'EditUser', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import('@/views/user/detail'),
+        name: 'UserDetail',
+        meta: { title: 'UserDetail', noCache: true },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/book',
     component: Layout,
     redirect: 'book',
@@ -209,44 +247,6 @@ export const constantRoutes = [
         component: () => import('@/views/organization/detail'),
         name: 'OrgDetail',
         meta: { title: 'OrgDetail', noCache: true },
-        hidden: true
-      }
-    ]
-  },
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user/list',
-    name: 'User',
-    meta: {
-      title: 'User',
-      icon: 'user'
-    },
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/user/list'),
-        name: 'UserList',
-        meta: { title: 'UserList', icon: 'list' }
-      },
-      {
-        path: 'create',
-        component: () => import('@/views/user/create'),
-        name: 'CreateUser',
-        meta: { title: 'CreateUser', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/user/edit'),
-        name: 'EditUser',
-        meta: { title: 'EditUser', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import('@/views/user/detail'),
-        name: 'UserDetail',
-        meta: { title: 'UserDetail', noCache: true },
         hidden: true
       }
     ]

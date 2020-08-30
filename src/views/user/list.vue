@@ -50,11 +50,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column fixed="right" align="center" width="180" label="function">
+      <el-table-column fixed="right" align="center" width="220" label="function">
         <template slot-scope="scope">
-          <el-button @click="this.handleDetail(scope.row)" type="text" size="small">detail</el-button>
-          <el-button @click="this.handleAble(scope.row)" type="text" size="small">enable</el-button>
-          <el-button @click="this.handleDetail(scope.row)" type="text" size="small">delete</el-button>
+          <el-switch
+            v-model="scope.row.able == 0"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @click="this.handleAble(scope.row)">
+          </el-switch>
+          <el-button @click="this.handleDetail(scope.row)" type="primary" icon="el-icon-setting" round></el-button>
+          <el-button @click="this.handleDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -134,7 +139,11 @@
 
       },
       handleAble(row){
-
+        if (row.able == 0) {
+          row.able = 1;
+        } else {
+          row.able = 0;
+        }
       },
       handleDelete(row){
 

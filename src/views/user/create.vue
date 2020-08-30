@@ -82,7 +82,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('admin/admin', this.adminForm)
+            this.$store.dispatch('admin/adminCreate', this.adminForm)
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/user/list'})

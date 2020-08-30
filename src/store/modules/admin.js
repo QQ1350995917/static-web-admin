@@ -1,4 +1,4 @@
-import { adminUserList, adminCreate } from '@/api/admin'
+import { adminUserList, adminCreate,adminUserInfo,adminAccountList } from '@/api/admin'
 
 const actions = {
   adminList(commit, page, scopes, sorts) {
@@ -11,7 +11,7 @@ const actions = {
       })
     })
   },
-  admin(commit, state){
+  adminCreate(commit, state){
     return new Promise((resolve, reject) => {
       const {accountName, accountPwd, userName, pin, empNo, level, gender, summary} = state
       adminCreate({
@@ -28,6 +28,26 @@ const actions = {
           loginPwd: accountPwd
         }
       }).then(response => {
+        const data = response
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  adminUserInfo(commit, uid){
+    return new Promise((resolve, reject) => {
+      adminUserInfo(uid).then(response => {
+        const data = response
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  adminUserAccountList(commit, uid){
+    return new Promise((resolve, reject) => {
+      adminAccountList(uid).then(response => {
         const data = response
         resolve(data)
       }).catch(error => {

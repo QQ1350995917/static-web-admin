@@ -14,3 +14,17 @@ export function adminCreate(params) {
     data: params
   })
 }
+
+export function adminUserInfo(uid) {
+  return request({
+    url: '/account/api/admin/admin/user/' + uid,
+    method: 'get'
+  })
+}
+
+export function adminAccountList(uid) {
+  return request({
+    url: '/account/api/admin/admin/account/' + uid,
+    method: 'get'
+  })
+}

@@ -54,7 +54,8 @@
           style="width:20%"
         />
         <span class="svg-container" style="height:49px;width:71%;padding: 0px;float:right">
-          <img :src="captcha" mode="widthFix" @click="refreshCaptcha" style="height:100%; float: right;cursor: pointer;">
+          <img :src="captcha" mode="widthFix" @click="refreshCaptcha"
+               style="height:100%; float: right;cursor: pointer;">
         </span>
       </el-form-item>
 
@@ -155,7 +156,7 @@
       }
     },
     created() {
-       window.addEventListener('storage', this.afterQRScan)
+      window.addEventListener('storage', this.afterQRScan)
     },
     mounted() {
       this.sessionInit();
@@ -168,7 +169,7 @@
       }
     },
     destroyed() {
-       window.removeEventListener('storage', this.afterQRScan)
+      window.removeEventListener('storage', this.afterQRScan)
     },
     methods: {
       sessionInit() {
@@ -231,24 +232,24 @@
           }
         })
       },
-       afterQRScan() {
-         if (e.key === 'x-admin-oauth-code') {
-           const code = getQueryObject(e.newValue)
-           const codeMap = {
-             wechat: 'code',
-             tencent: 'code'
-           }
-           const type = codeMap[this.auth_type]
-           const codeName = code[type]
-           if (codeName) {
-             this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-               this.$router.push({ path: this.redirect || '/' })
-             })
-           } else {
-             alert('第三方登录失败')
-           }
-         }
-       }
+      afterQRScan() {
+        if (e.key === 'x-admin-oauth-code') {
+          const code = getQueryObject(e.newValue)
+          const codeMap = {
+            wechat: 'code',
+            tencent: 'code'
+          }
+          const type = codeMap[this.auth_type]
+          const codeName = code[type]
+          if (codeName) {
+            this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
+              this.$router.push({path: this.redirect || '/'})
+            })
+          } else {
+            alert('第三方登录失败')
+          }
+        }
+      }
     }
   }
 </script>

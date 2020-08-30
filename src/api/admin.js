@@ -1,8 +1,16 @@
 import request from '@/utils/request'
 
-export function adminUserList() {
+export function adminUserList(page, scopes, sorts) {
   return request({
-    url: '/account/api/admin/admin/user',
+    url: '/account/api/admin/admin/user?page=' + encodeURI(JSON.stringify(page)),
     method: 'get'
+  })
+}
+
+export function adminCreate(params) {
+  return request({
+    url: '/account/api/admin/admin',
+    method: 'post',
+    data: params
   })
 }

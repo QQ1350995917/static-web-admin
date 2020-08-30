@@ -3,9 +3,9 @@
     <!-- Note that row-key is necessary to get a correct row order. -->
     <el-table ref="dragTable" :data="list" row-key="id" border fit highlight-current-row
               style="width: 100%" stripe>
-      <el-table-column align="center" label="ID" width="100" sortable>
+      <el-table-column align="center" label="SEQ" type="index" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="EMP_NO." width="120" sortable>
@@ -61,9 +61,9 @@
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleIndexChange"
-      :current-page="index + 1"
+      :current-page="query.page.index + 1"
       :page-sizes="[10,12,20,50,100]"
-      :page-size="size"
+      :page-size="query.page.size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total" style="margin-top: 10px">
     </el-pagination>
@@ -87,16 +87,16 @@
     data() {
       return {
         loading: true,
-        listQuery: {
-          page: 1,
-          limit: 10,
-          status: 0
+        query: {
+          page: {
+            index: 0,
+            size: 12
+          },
+          scopes: [],
+          sorts: []
         },
-        sortable: null,
         list: null,
-        total: 100,
-        size: 12,
-        index: 0,
+        total: 0
       }
     },
     created() {
@@ -104,12 +104,12 @@
     },
     methods: {
       getList() {
-        this.$store.dispatch('admin/adminList')
+        this.$store.dispatch('admin/adminList', this.query.page, this.query.scopes, this.query.sorts)
           .then((response) => {
             if (response.meta.code == 200) {
-              this.size = response.data.size;
+              this.query.page.index = response.data.index;
+              this.query.page.size = response.data.size;
               this.total = response.data.total;
-              this.index = response.data.index;
               this.list = response.data.elements
             }
           }).catch(() => {
@@ -122,12 +122,12 @@
       },
 
       handleSizeChange(size) {
-        this.size = size;
+        this.query.page.size = size;
         this.getList()
       },
       handleIndexChange(index) {
         index = index - 1;
-        this.index = index;
+        this.query.page.index = index;
         this.getList()
       },
       handleDetail(row){

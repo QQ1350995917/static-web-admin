@@ -24,8 +24,6 @@ router.beforeEach(async(to, from, next) => {
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
-        //TODO
-        await store.dispatch('permission/generateRoutes', store.getters.roles)
         next()
       } else {
         try {

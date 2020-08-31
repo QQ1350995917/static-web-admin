@@ -135,7 +135,7 @@
         this.getList()
       },
       handleUserDetail(row){
-        this.$router.push({path: this.redirect || '/admin/detail/' + row.id})
+        this.$router.push({path: this.redirect || '/user/detail/' + row.id})
       },
       handleUserAble(row){
 

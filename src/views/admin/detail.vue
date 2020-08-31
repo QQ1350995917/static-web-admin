@@ -1,19 +1,19 @@
 <template>
   <div class="app-container" style="align-content: center">
     <el-row style="text-align: center">
-      <el-button type="danger" @click="ableUser('adminUserForm')">禁用</el-button>
+      <el-button type="warning" @click="ableUser('adminUserForm')">禁用</el-button>
       <el-button type="danger" @click="deleteUser('adminUserForm')">删除</el-button>
       <el-button type="danger" @click="mergeUser('adminUserForm')">合并</el-button>
     </el-row>
     <el-form :model="adminUserForm" :rules="adminUserFormRules" ref="adminUserForm" label-width="120px"
              style="margin-top: 10px">
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="userName" prop="userName">
             <el-input v-model="adminUserForm.userName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="gender" prop="gender">
             <el-radio-group v-model="adminUserForm.gender">
               <el-radio label="0"></el-radio>
@@ -23,24 +23,24 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="pin" prop="pin">
             <el-input v-model="adminUserForm.pin"></el-input>
           </el-form-item>
         </el-col>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="empNo" prop="empNo">
             <el-input v-model="adminUserForm.empNo"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="createTime" prop="createTime">
             <el-input v-model="adminUserForm.createTime" readonly></el-input>
           </el-form-item>
         </el-col>
-        <el-col span="12">
+        <el-col :span="12">
           <el-form-item label="updateTime" prop="updateTime">
             <el-input v-model="adminUserForm.updateTime" readonly></el-input>
           </el-form-item>
@@ -98,13 +98,9 @@
       </el-table-column>
       <el-table-column fixed="right" align="center" label="function">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.able == 0"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            @click="this.handleAble(scope.row)">
-          </el-switch>
-          <el-button @click="this.handleDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-button v-if="scope.row.able == 0" @click="handleAccountEnable(scope.row)" type="warning" icon="el-icon-check" round></el-button>
+          <el-button v-if="scope.row.able == 1" @click="handleAccountDisable(scope.row)" type="warning" icon="el-icon-close" round></el-button>
+          <el-button @click="handleAccountDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -145,7 +141,7 @@
           ],
           pin: [
             {required: false, message: '请输入用户证件号', trigger: 'blur'},
-            {min: 18, max: 18, message: '长度在 18 个字符', trigger: 'blur'}
+            {min: 0, max: 18, message: '长度在 0 到 18 个字符', trigger: 'blur'}
           ],
           empNo: [
             {required: false, message: '请输入员工号', trigger: 'blur'},
@@ -210,7 +206,17 @@
         });
       },
       resetForm(formName) {
-        this.$refs[formName].resetFields();
+        this.$router.go(0); 
+//        this.$refs[formName].resetFields();
+      },
+      handleAccountEnable(row) {
+
+      },
+      handleAccountDisable(row) {
+
+      },
+      handleAccountDelete(row) {
+
       }
     }
   }

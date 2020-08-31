@@ -84,39 +84,39 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/user',
+    path: '/admin',
     component: Layout,
-    redirect: '/user/list',
-    name: 'User',
+    redirect: '/admin/list',
+    name: 'Admin',
     meta: {
-      title: 'User',
+      title: 'Admin',
       icon: 'user'
     },
     children: [
       {
         path: 'list',
-        component: () => import('@/views/user/list'),
-        name: 'UserList',
-        meta: { title: 'UserList', icon: 'list' }
+        component: () => import('@/views/admin/list'),
+        name: 'AdminList',
+        meta: { title: 'AdminList', icon: 'list' }
       },
       {
         path: 'create',
-        component: () => import('@/views/user/create'),
-        name: 'CreateUser',
-        meta: { title: 'CreateUser', icon: 'edit' }
+        component: () => import('@/views/admin/create'),
+        name: 'CreateAdmin',
+        meta: { title: 'CreateAdmin', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: () => import('@/views/user/edit'),
-        name: 'EditUser',
-        meta: { title: 'EditUser', noCache: true },
+        component: () => import('@/views/admin/edit'),
+        name: 'EditAdmin',
+        meta: { title: 'EditAdmin', noCache: true },
         hidden: true
       },
       {
         path: 'detail/:id(\\d+)',
-        component: () => import('@/views/user/detail'),
-        name: 'UserDetail',
-        meta: { title: 'UserDetail', noCache: true },
+        component: () => import('@/views/admin/detail'),
+        name: 'AdminDetail',
+        meta: { title: 'AdminDetail', noCache: true },
         hidden: true
       }
     ]

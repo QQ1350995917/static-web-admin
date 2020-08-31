@@ -52,14 +52,10 @@
 
       <el-table-column fixed="right" align="center" width="220" label="function">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.able == 0"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            @click="this.handleAble(scope.row)">
-          </el-switch>
-          <el-button @click="this.handleDetail(scope.row)" type="primary" icon="el-icon-setting" round></el-button>
-          <el-button @click="this.handleDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-setting" round></el-button>
+          <el-button v-if="scope.row.able == 1" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
+          <el-button v-if="scope.row.able == 0" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
+          <el-button @click="handleUserDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,8 +72,11 @@
 </template>
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button";
+  import ElPopover from "../../../node_modules/element-ui/packages/popover/src/main";
   export default {
-    components: {ElButton},
+    components: {
+      ElPopover,
+      ElButton},
     name: 'Admin',
     filters: {
       statusFilter(status) {
@@ -135,17 +134,13 @@
         this.query.page.index = index;
         this.getList()
       },
-      handleDetail(row){
+      handleUserDetail(row){
+        this.$router.push({path: this.redirect || '/admin/detail/' + row.id})
+      },
+      handleUserAble(row){
 
       },
-      handleAble(row){
-        if (row.able == 0) {
-          row.able = 1;
-        } else {
-          row.able = 0;
-        }
-      },
-      handleDelete(row){
+      handleUserDelete(row){
 
       }
     },

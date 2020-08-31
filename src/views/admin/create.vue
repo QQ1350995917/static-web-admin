@@ -63,7 +63,7 @@
           ],
           pin: [
             {required: false, message: '请输入用户证件号', trigger: 'blur'},
-            {min: 18, max: 18, message: '长度在 18 个字符', trigger: 'blur'}
+            {min: 0, max: 18, message: '长度在 0 到 18 个字符', trigger: 'blur'}
           ],
           empNo: [
             {required: false, message: '请输入员工号', trigger: 'blur'},

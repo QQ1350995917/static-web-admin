@@ -1,13 +1,6 @@
 import request from '@/utils/request'
 
-export function adminUserList(page, scopes, sorts) {
-  return request({
-    url: '/account/api/admin/admin/user?page=' + encodeURI(JSON.stringify(page)),
-    method: 'get'
-  })
-}
-
-export function adminCreate(params) {
+export function create(params) {
   return request({
     url: '/account/api/admin/admin',
     method: 'post',
@@ -15,14 +8,36 @@ export function adminCreate(params) {
   })
 }
 
-export function adminUserInfo(uid) {
+export function userList(page, scopes, sorts) {
+  return request({
+    url: '/account/api/admin/admin/user?page=' + encodeURI(JSON.stringify(page)),
+    method: 'get'
+  })
+}
+
+export function userInfo(uid) {
   return request({
     url: '/account/api/admin/admin/user/' + uid,
     method: 'get'
   })
 }
 
-export function adminAccountList(uid) {
+export function userEnable(uids) {
+  return request({
+    url: '/account/api/admin/admin/user/enable',
+    method: 'patch',
+    data: uids
+  })
+}
+export function userDisable(uids) {
+  return request({
+    url: '/account/api/admin/admin/user/disable',
+    method: 'patch',
+    data: uids
+  })
+}
+
+export function accountList(uid) {
   return request({
     url: '/account/api/admin/admin/account/' + uid,
     method: 'get'

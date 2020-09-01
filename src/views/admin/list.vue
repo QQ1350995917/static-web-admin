@@ -53,9 +53,30 @@
       <el-table-column fixed="right" align="center" width="220" label="function">
         <template slot-scope="scope">
           <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-setting" round></el-button>
-          <el-button v-if="scope.row.able == 1" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button v-if="scope.row.able == 0" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button @click="handleUserDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-popconfirm
+            title="确定禁用/启用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleUserAble(scope.row)"
+            >
+            <el-button slot="reference" v-if="scope.row.able == 1" type="warning" icon="el-icon-close" round></el-button>
+            <el-button slot="reference" v-if="scope.row.able == 0" type="warning" icon="el-icon-check" round></el-button>
+          </el-popconfirm>
+
+          <el-popconfirm
+            title="确定删除吗？"
+            iconColor="red"
+            confirmButtonText='删除'
+            confirmButtonType="danger"
+            cancelButtonText='取消'
+            icon="el-icon-delete"
+            @onConfirm="handleUserDelete(scope.row)"
+            >
+            <el-button slot="reference" type="danger" icon="el-icon-delete" round></el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -73,8 +94,10 @@
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button";
   import ElPopover from "../../../node_modules/element-ui/packages/popover/src/main";
+  import ElPopconfirm from "../../../node_modules/element-ui/packages/popconfirm/src/main";
   export default {
     components: {
+      ElPopconfirm,
       ElPopover,
       ElButton},
     name: 'Admin',
@@ -108,7 +131,7 @@
     },
     methods: {
       getList() {
-        this.$store.dispatch('admin/adminList', this.query.page, this.query.scopes, this.query.sorts)
+        this.$store.dispatch('admin/userList', this.query.page, this.query.scopes, this.query.sorts)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = response.data.index;
@@ -118,11 +141,6 @@
             }
           }).catch(() => {
         })
-//      this.list = data.org
-//      this.total = 100
-//      this.loading = false
-//      this.oldList = this.list.map(v => v.id)
-//      this.newList = this.oldList.slice()
       },
 
       handleSizeChange(size) {
@@ -138,10 +156,52 @@
         this.$router.push({path: this.redirect || '/admin/detail/' + row.id})
       },
       handleUserAble(row){
+        if (row.able == 0) {
+          this.handleUserEnable(row);
+        } else if (row.able == 1) {
+          this.handleUserDisable(row);
+        } else {
+          this.$message.error('参数错误');
+        }
+      },
+      handleUserEnable(row){
+        this.$store.dispatch('admin/userEnable', this.query.page, this.query.scopes, this.query.sorts)
+          .then((response) => {
+            if (response.meta.code == 200) {
+              this.query.page.index = response.data.index;
+              this.query.page.size = response.data.size;
+              this.total = response.data.total;
+              this.list = response.data.elements
+            }
+          }).catch(() => {
+        })
+        this.$message({
+          message: '启用成功',
+          type: 'success'
+        });
+      },
+      handleUserDisable(row){
+        this.$store.dispatch('admin/userDisable', this.query.page, this.query.scopes, this.query.sorts)
+          .then((response) => {
+            if (response.meta.code == 200) {
+              this.query.page.index = response.data.index;
+              this.query.page.size = response.data.size;
+              this.total = response.data.total;
+              this.list = response.data.elements
+            }
+          }).catch(() => {
+        })
 
+        this.$message({
+          message: '禁用成功',
+          type: 'success'
+        });
       },
       handleUserDelete(row){
-
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        });
       }
     },
   }

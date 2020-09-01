@@ -171,7 +171,7 @@
     },
     methods: {
       requestForUserInfo(){
-        this.$store.dispatch('admin/adminUserInfo', this.adminUserForm.uid)
+        this.$store.dispatch('admin/userInfo', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.adminUserForm = response.data;
@@ -181,7 +181,7 @@
         })
       },
       requestForUserAccountList(){
-        this.$store.dispatch('admin/adminUserAccountList', this.adminUserForm.uid)
+        this.$store.dispatch('admin/userAccountList', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.list = response.data.elements;
@@ -206,7 +206,7 @@
         });
       },
       resetForm(formName) {
-        this.$router.go(0); 
+        this.$router.go(0);
 //        this.$refs[formName].resetFields();
       },
       handleAccountEnable(row) {

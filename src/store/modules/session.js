@@ -16,7 +16,7 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: ['admin'],
+  roles: [],
 }
 
 const mutations = {

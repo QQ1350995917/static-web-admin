@@ -1,4 +1,4 @@
-import { create, userList, userInfo, userEnable, userDisable, accountList } from '@/api/admin'
+import { create, userList, userInfo, userEnable, userDisable, userDelete, accountList } from '@/api/admin'
 
 const actions = {
   create(commit, state){
@@ -25,9 +25,9 @@ const actions = {
       })
     })
   },
-  userList(commit, page, scopes, sorts) {
+  userList(commit, query) {
     return new Promise((resolve, reject) => {
-      userList(page, scopes, sorts).then(response => {
+      userList(query.page, query.scopes, query.sorts).then(response => {
         const data = response
         resolve(data)
       }).catch(error => {
@@ -58,7 +58,17 @@ const actions = {
   },
   userDisable(commit, uids){
     return new Promise((resolve, reject) => {
-      accountList(uid).then(response => {
+      userDisable(uids).then(response => {
+        const data = response
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  userDelete(commit,uids){
+    return new Promise((resolve, reject) => {
+      userDelete(uids).then(response => {
         const data = response
         resolve(data)
       }).catch(error => {

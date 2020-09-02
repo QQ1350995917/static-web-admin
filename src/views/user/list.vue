@@ -77,7 +77,7 @@
     components: {
       ElPopover,
       ElButton},
-    name: 'Admin',
+    name: 'User',
     filters: {
       statusFilter(status) {
         const statusMap = {

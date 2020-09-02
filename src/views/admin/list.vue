@@ -61,9 +61,11 @@
             cancelButtonText='取消'
             icon="el-icon-warning"
             @onConfirm="handleUserAble(scope.row)"
-            >
-            <el-button slot="reference" v-if="scope.row.able == 1" type="warning" icon="el-icon-close" round></el-button>
-            <el-button slot="reference" v-if="scope.row.able == 0" type="warning" icon="el-icon-check" round></el-button>
+          >
+            <el-button slot="reference" v-if="scope.row.able == 1" type="warning" icon="el-icon-close"
+                       round></el-button>
+            <el-button slot="reference" v-if="scope.row.able == 0" type="warning" icon="el-icon-check"
+                       round></el-button>
           </el-popconfirm>
 
           <el-popconfirm
@@ -74,7 +76,7 @@
             cancelButtonText='取消'
             icon="el-icon-delete"
             @onConfirm="handleUserDelete(scope.row)"
-            >
+          >
             <el-button slot="reference" type="danger" icon="el-icon-delete" round></el-button>
           </el-popconfirm>
         </template>
@@ -99,7 +101,8 @@
     components: {
       ElPopconfirm,
       ElPopover,
-      ElButton},
+      ElButton
+    },
     name: 'Admin',
     filters: {
       statusFilter(status) {
@@ -119,7 +122,7 @@
             index: 0,
             size: 12
           },
-          scopes: [],
+          scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
           sorts: []
         },
         list: null,
@@ -131,13 +134,13 @@
     },
     methods: {
       getList() {
-        this.$store.dispatch('admin/userList', this.query.page, this.query.scopes, this.query.sorts)
+        this.$store.dispatch('admin/userList', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = response.data.index;
               this.query.page.size = response.data.size;
               this.total = response.data.total;
-              this.list = response.data.elements
+              this.list = response.data.elements;
             }
           }).catch(() => {
         })
@@ -165,43 +168,43 @@
         }
       },
       handleUserEnable(row){
-        this.$store.dispatch('admin/userEnable', this.query.page, this.query.scopes, this.query.sorts)
-          .then((response) => {
-            if (response.meta.code == 200) {
-              this.query.page.index = response.data.index;
-              this.query.page.size = response.data.size;
-              this.total = response.data.total;
-              this.list = response.data.elements
-            }
-          }).catch(() => {
+        this.$store.dispatch('admin/userEnable', [row.id])
+          .then(() => {
+            row.able = 1;
+            this.$message({
+              message: '启用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
         })
-        this.$message({
-          message: '启用成功',
-          type: 'success'
-        });
       },
       handleUserDisable(row){
-        this.$store.dispatch('admin/userDisable', this.query.page, this.query.scopes, this.query.sorts)
-          .then((response) => {
-            if (response.meta.code == 200) {
-              this.query.page.index = response.data.index;
-              this.query.page.size = response.data.size;
-              this.total = response.data.total;
-              this.list = response.data.elements
-            }
-          }).catch(() => {
+        this.$store.dispatch('admin/userDisable', [row.id])
+          .then(() => {
+            row.able = 0;
+            this.$message({
+              message: '禁用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
         })
-
-        this.$message({
-          message: '禁用成功',
-          type: 'success'
-        });
       },
       handleUserDelete(row){
-        this.$message({
-          message: '删除成功',
-          type: 'success'
-        });
+        this.$store.dispatch('admin/userDelete', [row.id])
+          .then(() => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            if (this.list.length == 1 && this.query.page.index > 0) {
+              this.query.page.index = this.query.page.index - 1;
+            }
+            this.getList();
+          }).catch((error) => {
+          this.$message.error(error);
+        })
       }
     },
   }

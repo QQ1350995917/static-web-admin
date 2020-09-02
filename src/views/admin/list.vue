@@ -123,7 +123,7 @@
             size: 12
           },
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
-          sorts: []
+          sorts: [{"fieldName":"create_time","sort":"asc"}]
         },
         list: null,
         total: 0

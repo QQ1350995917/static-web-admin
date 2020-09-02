@@ -10,7 +10,7 @@ export function create(params) {
 
 export function userList(page, scopes, sorts) {
   return request({
-    url: '/account/api/admin/admin/user?page=' + encodeURI(JSON.stringify(page)) + "&scopes="  + encodeURI(JSON.stringify(scopes)) ,
+    url: '/account/api/admin/admin/user?page=' + encodeURI(JSON.stringify(page)) + "&scopes="  + encodeURI(JSON.stringify(scopes))  + "&sorts="  + encodeURI(JSON.stringify(sorts)),
     method: 'get'
   })
 }

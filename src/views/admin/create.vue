@@ -1,36 +1,38 @@
 <template>
-  <div class="app-container" style="align-content: center">
-    <el-form :model="adminForm" :rules="adminFormRules" ref="adminForm" label-width="120px" style="width:500px;">
-      <el-form-item label="accountName" prop="accountName">
-        <el-input v-model="adminForm.accountName"></el-input>
-      </el-form-item>
-      <el-form-item label="accountPwd" prop="accountPwd">
-        <el-input v-model="adminForm.accountPwd"></el-input>
-      </el-form-item>
-      <el-form-item label="userName" prop="userName">
-        <el-input v-model="adminForm.userName"></el-input>
-      </el-form-item>
-      <el-form-item label="pin" prop="pin">
-        <el-input v-model="adminForm.pin"></el-input>
-      </el-form-item>
-      <el-form-item label="empNo" prop="empNo">
-        <el-input v-model="adminForm.empNo"></el-input>
-      </el-form-item>
+  <div class="app-container" >
+    <div style="width:50%;margin: 0 auto">
+      <el-form :model="adminForm" :rules="adminFormRules" ref="adminForm" label-width="120px">
+        <el-form-item label="accountName" prop="accountName">
+          <el-input v-model="adminForm.accountName"></el-input>
+        </el-form-item>
+        <el-form-item label="accountPwd" prop="accountPwd">
+          <el-input v-model="adminForm.accountPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="userName" prop="userName">
+          <el-input v-model="adminForm.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="pin" prop="pin">
+          <el-input v-model="adminForm.pin"></el-input>
+        </el-form-item>
+        <el-form-item label="empNo" prop="empNo">
+          <el-input v-model="adminForm.empNo"></el-input>
+        </el-form-item>
 
-      <el-form-item label="gender" prop="gender">
-        <el-radio-group v-model="adminForm.gender">
-          <el-radio label="0"></el-radio>
-          <el-radio label="1"></el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="summary" prop="summary">
-        <el-input type="textarea" v-model="adminForm.summary"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('adminForm')">立即创建</el-button>
-        <el-button @click="resetForm('adminForm')">重置</el-button>
-      </el-form-item>
-    </el-form>
+        <el-form-item label="gender" prop="gender">
+          <el-radio-group v-model="adminForm.gender">
+            <el-radio label="0"></el-radio>
+            <el-radio label="1"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="summary" prop="summary">
+          <el-input type="textarea" v-model="adminForm.summary"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('adminForm')">立即创建</el-button>
+          <el-button @click="resetForm('adminForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 <script>

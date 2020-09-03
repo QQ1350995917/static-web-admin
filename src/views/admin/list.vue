@@ -54,7 +54,8 @@
         <template slot-scope="scope">
           <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-setting" round></el-button>
           <el-popconfirm
-            title="确定禁用/启用吗？"
+            v-if="scope.row.able == 1"
+            title="确定禁用吗？"
             iconColor="yellow"
             confirmButtonText='确定'
             confirmButtonType="warning"
@@ -62,10 +63,19 @@
             icon="el-icon-warning"
             @onConfirm="handleUserAble(scope.row)"
           >
-            <el-button slot="reference" v-if="scope.row.able == 1" type="warning" icon="el-icon-close"
-                       round></el-button>
-            <el-button slot="reference" v-if="scope.row.able == 0" type="warning" icon="el-icon-check"
-                       round></el-button>
+            <el-button slot="reference" type="warning" icon="el-icon-close" round></el-button>
+          </el-popconfirm>
+          <el-popconfirm
+            v-if="scope.row.able == 0"
+            title="确定启用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleUserAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-check" round></el-button>
           </el-popconfirm>
 
           <el-popconfirm
@@ -123,7 +133,7 @@
             size: 12
           },
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
-          sorts: [{"fieldName":"create_time","sort":"asc"}]
+          sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
         list: null,
         total: 0

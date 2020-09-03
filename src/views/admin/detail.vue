@@ -1,10 +1,5 @@
 <template>
   <div class="app-container" style="align-content: center">
-    <el-row style="text-align: center">
-      <el-button type="warning" @click="ableUser('adminUserForm')">禁用</el-button>
-      <el-button type="danger" @click="deleteUser('adminUserForm')">删除</el-button>
-      <el-button type="danger" @click="mergeUser('adminUserForm')">合并</el-button>
-    </el-row>
     <el-form :model="adminUserForm" :rules="adminUserFormRules" ref="adminUserForm" label-width="120px"
              style="margin-top: 10px">
       <el-row>
@@ -98,9 +93,42 @@
       </el-table-column>
       <el-table-column fixed="right" align="center" label="function">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.able == 0" @click="handleAccountEnable(scope.row)" type="warning" icon="el-icon-check" round></el-button>
-          <el-button v-if="scope.row.able == 1" @click="handleAccountDisable(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button @click="handleAccountDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-popconfirm
+            v-if="scope.row.able == 1"
+            title="确定禁用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleAccountAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-close" round></el-button>
+          </el-popconfirm>
+          <el-popconfirm
+            v-if="scope.row.able == 0"
+            title="确定启用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleAccountAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-check" round></el-button>
+          </el-popconfirm>
+
+          <el-popconfirm
+            title="确定删除吗？"
+            iconColor="red"
+            confirmButtonText='确定'
+            confirmButtonType="danger"
+            cancelButtonText='取消'
+            icon="el-icon-delete"
+            @onConfirm="handleAccountDelete(scope.row)"
+          >
+            <el-button slot="reference"  type="danger" icon="el-icon-delete" round></el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -108,8 +136,11 @@
 </template>
 <script>
   import ElFormItem from "../../../node_modules/element-ui/packages/form/src/form-item";
+  import ElPopconfirm from "../../../node_modules/element-ui/packages/popconfirm/src/main";
   export default {
-    components: {ElFormItem},
+    components: {
+      ElPopconfirm,
+      ElFormItem},
     name: 'AdminDetail',
     data() {
       return {
@@ -167,7 +198,7 @@
     },
     created() {
       this.requestForUserInfo(),
-      this.requestForUserAccountList()
+        this.requestForUserAccountList()
     },
     methods: {
       requestForUserInfo(){
@@ -209,10 +240,7 @@
         this.$router.go(0);
 //        this.$refs[formName].resetFields();
       },
-      handleAccountEnable(row) {
-
-      },
-      handleAccountDisable(row) {
+      handleAccountAble(row) {
 
       },
       handleAccountDelete(row) {

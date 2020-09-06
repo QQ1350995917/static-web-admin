@@ -1,10 +1,5 @@
 <template>
   <div class="app-container" style="align-content: center">
-    <el-row style="text-align: center">
-      <el-button type="warning" @click="ableUser('adminUserForm')">禁用</el-button>
-      <el-button type="danger" @click="deleteUser('adminUserForm')">删除</el-button>
-      <el-button type="danger" @click="mergeUser('adminUserForm')">合并</el-button>
-    </el-row>
     <el-form :model="adminUserForm" :rules="adminUserFormRules" ref="adminUserForm" label-width="120px"
              style="margin-top: 10px">
       <el-row>
@@ -74,9 +69,9 @@
           <span>{{ scope.row.loginPwd }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="pwdTime" width="120" sortable>
+      <el-table-column align="center" label="pwdTime" width="160" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.pwdTime }}</span>
+          <span>{{ scope.row.pwdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -98,9 +93,42 @@
       </el-table-column>
       <el-table-column fixed="right" align="center" label="function">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.able == 0" @click="handleAccountEnable(scope.row)" type="warning" icon="el-icon-check" round></el-button>
-          <el-button v-if="scope.row.able == 1" @click="handleAccountDisable(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button @click="handleAccountDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-popconfirm
+            v-if="scope.row.able == 1"
+            title="确定禁用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleAccountAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-lock" round></el-button>
+          </el-popconfirm>
+          <el-popconfirm
+            v-if="scope.row.able == 0"
+            title="确定启用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleAccountAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-unlock" round></el-button>
+          </el-popconfirm>
+
+          <el-popconfirm
+            title="确定删除吗？"
+            iconColor="red"
+            confirmButtonText='确定'
+            confirmButtonType="danger"
+            cancelButtonText='取消'
+            icon="el-icon-delete"
+            @onConfirm="handleAccountDelete(scope.row)"
+          >
+            <el-button slot="reference"  type="danger" icon="el-icon-delete" round></el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -108,8 +136,11 @@
 </template>
 <script>
   import ElFormItem from "../../../node_modules/element-ui/packages/form/src/form-item";
+  import ElPopconfirm from "../../../node_modules/element-ui/packages/popconfirm/src/main";
   export default {
-    components: {ElFormItem},
+    components: {
+      ElPopconfirm,
+      ElFormItem},
     name: 'AdminDetail',
     data() {
       return {
@@ -167,11 +198,11 @@
     },
     created() {
       this.requestForUserInfo(),
-      this.requestForUserAccountList()
+        this.requestForUserAccountList()
     },
     methods: {
       requestForUserInfo(){
-        this.$store.dispatch('admin/adminUserInfo', this.adminUserForm.uid)
+        this.$store.dispatch('account/adminUserInfo', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.adminUserForm = response.data;
@@ -181,7 +212,7 @@
         })
       },
       requestForUserAccountList(){
-        this.$store.dispatch('admin/adminUserAccountList', this.adminUserForm.uid)
+        this.$store.dispatch('account/adminAccountList', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.list = response.data.elements;
@@ -192,7 +223,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('admin/admin', this.adminForm)
+            this.$store.dispatch('account/account', this.adminForm)
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/user/list'})
@@ -206,13 +237,10 @@
         });
       },
       resetForm(formName) {
-        this.$router.go(0); 
+        this.$router.go(0);
 //        this.$refs[formName].resetFields();
       },
-      handleAccountEnable(row) {
-
-      },
-      handleAccountDisable(row) {
+      handleAccountAble(row) {
 
       },
       handleAccountDelete(row) {

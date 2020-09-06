@@ -69,9 +69,9 @@
           <span>{{ scope.row.loginPwd }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="pwdTime" width="120" sortable>
+      <el-table-column align="center" label="pwdTime" width="160" sortable>
         <template slot-scope="scope">
-          <span>{{ scope.row.pwdTime }}</span>
+          <span>{{ scope.row.pwdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -103,7 +103,7 @@
             icon="el-icon-warning"
             @onConfirm="handleAccountAble(scope.row)"
           >
-            <el-button slot="reference" type="warning" icon="el-icon-close" round></el-button>
+            <el-button slot="reference" type="warning" icon="el-icon-lock" round></el-button>
           </el-popconfirm>
           <el-popconfirm
             v-if="scope.row.able == 0"
@@ -115,7 +115,7 @@
             icon="el-icon-warning"
             @onConfirm="handleAccountAble(scope.row)"
           >
-            <el-button slot="reference" type="warning" icon="el-icon-check" round></el-button>
+            <el-button slot="reference" type="warning" icon="el-icon-unlock" round></el-button>
           </el-popconfirm>
 
           <el-popconfirm
@@ -141,7 +141,7 @@
     components: {
       ElPopconfirm,
       ElFormItem},
-    name: 'AdminDetail',
+    name: 'UserDetail',
     data() {
       return {
         adminUserForm: {
@@ -202,7 +202,7 @@
     },
     methods: {
       requestForUserInfo(){
-        this.$store.dispatch('admin/userInfo', this.adminUserForm.uid)
+        this.$store.dispatch('account/userUserInfo', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.adminUserForm = response.data;
@@ -212,7 +212,7 @@
         })
       },
       requestForUserAccountList(){
-        this.$store.dispatch('admin/userAccountList', this.adminUserForm.uid)
+        this.$store.dispatch('account/userAccountList', this.adminUserForm.uid)
           .then((response) => {
             if (response.meta.code == 200) {
               this.list = response.data.elements;
@@ -223,10 +223,10 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('admin/admin', this.adminForm)
+            this.$store.dispatch('account/account', this.adminForm)
               .then((response) => {
                 if (response.meta.code == 200) {
-                  this.$router.push({path: this.redirect || '/user/list'})
+                  this.$router.push({path: this.redirect || '/user.js/list'})
                 }
               }).catch(() => {
             })

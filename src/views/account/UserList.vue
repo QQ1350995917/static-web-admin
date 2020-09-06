@@ -53,9 +53,42 @@
       <el-table-column fixed="right" align="center" width="220" label="function">
         <template slot-scope="scope">
           <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-setting" round></el-button>
-          <el-button v-if="scope.row.able == 1" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button v-if="scope.row.able == 0" @click="handleUserAble(scope.row)" type="warning" icon="el-icon-close" round></el-button>
-          <el-button @click="handleUserDelete(scope.row)" type="danger" icon="el-icon-delete" round></el-button>
+          <el-popconfirm
+            v-if="scope.row.able == 1"
+            title="确定禁用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleUserAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-lock" round></el-button>
+          </el-popconfirm>
+          <el-popconfirm
+            v-if="scope.row.able == 0"
+            title="确定启用吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="handleUserAble(scope.row)"
+          >
+            <el-button slot="reference" type="warning" icon="el-icon-unlock" round></el-button>
+          </el-popconfirm>
+
+          <el-popconfirm
+            title="确定删除吗？"
+            iconColor="red"
+            confirmButtonText='删除'
+            confirmButtonType="danger"
+            cancelButtonText='取消'
+            icon="el-icon-delete"
+            @onConfirm="handleUserDelete(scope.row)"
+          >
+            <el-button slot="reference" type="danger" icon="el-icon-delete" round></el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -73,11 +106,14 @@
 <script>
   import ElButton from "../../../node_modules/element-ui/packages/button/src/button";
   import ElPopover from "../../../node_modules/element-ui/packages/popover/src/main";
+  import ElPopconfirm from "../../../node_modules/element-ui/packages/popconfirm/src/main";
   export default {
     components: {
+      ElPopconfirm,
       ElPopover,
-      ElButton},
-    name: 'User',
+      ElButton
+    },
+    name: 'UserList',
     filters: {
       statusFilter(status) {
         const statusMap = {
@@ -96,52 +132,89 @@
             index: 0,
             size: 12
           },
-          scopes: [],
-          sorts: []
+          scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
+          sorts: [{"fieldName": "create_Time", "sort": "desc"}]
         },
-        list: null,
+        list: [],
         total: 0
       }
     },
     created() {
-      this.getList()
+      this.requestForUserList()
     },
     methods: {
-      getList() {
-        this.$store.dispatch('admin/adminList', this.query.page, this.query.scopes, this.query.sorts)
+      requestForUserList() {
+        this.$store.dispatch('account/userUserList', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = response.data.index;
               this.query.page.size = response.data.size;
               this.total = response.data.total;
-              this.list = response.data.elements
+              this.list = response.data.elements;
             }
           }).catch(() => {
         })
-//      this.list = data.org
-//      this.total = 100
-//      this.loading = false
-//      this.oldList = this.list.map(v => v.id)
-//      this.newList = this.oldList.slice()
       },
 
       handleSizeChange(size) {
         this.query.page.size = size;
-        this.getList()
+        this.requestForUserList()
       },
       handleIndexChange(index) {
         index = index - 1;
         this.query.page.index = index;
-        this.getList()
+        this.requestForUserList()
       },
       handleUserDetail(row){
-        this.$router.push({path: this.redirect || '/user/detail/' + row.id})
+        this.$router.push({path: this.redirect || '/account/user/detail/' + row.id})
       },
       handleUserAble(row){
-
+        if (row.able == 0) {
+          this.handleUserEnable(row);
+        } else if (row.able == 1) {
+          this.handleUserDisable(row);
+        } else {
+          this.$message.error('参数错误');
+        }
+      },
+      handleUserEnable(row){
+        this.$store.dispatch('account/userUserEnable', [row.id])
+          .then(() => {
+            row.able = 1;
+            this.$message({
+              message: '启用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
+        })
+      },
+      handleUserDisable(row){
+        this.$store.dispatch('account/userUserDisable', [row.id])
+          .then(() => {
+            row.able = 0;
+            this.$message({
+              message: '禁用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
+        })
       },
       handleUserDelete(row){
-
+        this.$store.dispatch('account/userUserDelete', [row.id])
+          .then(() => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            if (this.list.length == 1 && this.query.page.index > 0) {
+              this.query.page.index = this.query.page.index - 1;
+            }
+            this.requestForUserList();
+          }).catch((error) => {
+          this.$message.error(error);
+        })
       }
     },
   }

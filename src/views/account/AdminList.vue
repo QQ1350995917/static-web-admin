@@ -63,7 +63,7 @@
             icon="el-icon-warning"
             @onConfirm="handleUserAble(scope.row)"
           >
-            <el-button slot="reference" type="warning" icon="el-icon-close" round></el-button>
+            <el-button slot="reference" type="warning" icon="el-icon-lock" round></el-button>
           </el-popconfirm>
           <el-popconfirm
             v-if="scope.row.able == 0"
@@ -75,7 +75,7 @@
             icon="el-icon-warning"
             @onConfirm="handleUserAble(scope.row)"
           >
-            <el-button slot="reference" type="warning" icon="el-icon-check" round></el-button>
+            <el-button slot="reference" type="warning" icon="el-icon-unlock" round></el-button>
           </el-popconfirm>
 
           <el-popconfirm
@@ -113,7 +113,7 @@
       ElPopover,
       ElButton
     },
-    name: 'Admin',
+    name: 'AdminList',
     filters: {
       statusFilter(status) {
         const statusMap = {
@@ -135,16 +135,16 @@
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
           sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
-        list: null,
+        list: [],
         total: 0
       }
     },
     created() {
-      this.getList()
+      this.requestAdminUserList()
     },
     methods: {
-      getList() {
-        this.$store.dispatch('admin/userList', this.query)
+      requestAdminUserList() {
+        this.$store.dispatch('account/adminUserList', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = response.data.index;
@@ -158,15 +158,15 @@
 
       handleSizeChange(size) {
         this.query.page.size = size;
-        this.getList()
+        this.requestAdminUserList()
       },
       handleIndexChange(index) {
         index = index - 1;
         this.query.page.index = index;
-        this.getList()
+        this.requestAdminUserList()
       },
       handleUserDetail(row){
-        this.$router.push({path: this.redirect || '/admin/detail/' + row.id})
+        this.$router.push({path: this.redirect || '/account/admin/detail/' + row.id})
       },
       handleUserAble(row){
         if (row.able == 0) {
@@ -178,7 +178,7 @@
         }
       },
       handleUserEnable(row){
-        this.$store.dispatch('admin/userEnable', [row.id])
+        this.$store.dispatch('account/adminUserEnable', [row.id])
           .then(() => {
             row.able = 1;
             this.$message({
@@ -190,7 +190,7 @@
         })
       },
       handleUserDisable(row){
-        this.$store.dispatch('admin/userDisable', [row.id])
+        this.$store.dispatch('account/adminUserDisable', [row.id])
           .then(() => {
             row.able = 0;
             this.$message({
@@ -202,7 +202,7 @@
         })
       },
       handleUserDelete(row){
-        this.$store.dispatch('admin/userDelete', [row.id])
+        this.$store.dispatch('account/adminUserDelete', [row.id])
           .then(() => {
             this.$message({
               message: '删除成功',
@@ -211,7 +211,7 @@
             if (this.list.length == 1 && this.query.page.index > 0) {
               this.query.page.index = this.query.page.index - 1;
             }
-            this.getList();
+            this.requestAdminUserList();
           }).catch((error) => {
           this.$message.error(error);
         })

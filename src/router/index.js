@@ -24,7 +24,7 @@ import nestedRouter from './modules/nested'
 * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
 * name:'router-name'             the name is used by <keep-alive> (must set!!!)
 * meta : {
-    roles: ['admin','editor']    will control the page roles (you can set multiple roles)
+    roles: ['account','editor']    will control the page roles (you can set multiple roles)
     title: 'title'               the name show in sub-menu and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar
     noCache: true                if true, the page will no be cached(default is false)
@@ -84,75 +84,49 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/admin',
+    path: '/account',
     component: Layout,
-    redirect: '/admin/list',
-    name: 'Admin',
+    redirect: '/account/list',
+    name: 'account',
     meta: {
-      title: 'Admin',
+      title: 'Account',
       icon: 'user'
     },
     children: [
       {
-        path: 'list',
-        component: () => import('@/views/admin/list'),
+        path: 'admin/list',
+        component: () => import('@/views/account/AdminList'),
         name: 'AdminList',
         meta: { title: 'AdminList', icon: 'list' }
       },
       {
-        path: 'create',
-        component: () => import('@/views/admin/create'),
-        name: 'CreateAdmin',
-        meta: { title: 'CreateAdmin', icon: 'edit' }
+        path: 'admin/create',
+        component: () => import('@/views/account/AdminCreate'),
+        name: 'AdminCreate',
+        meta: { title: 'AdminCreate', icon: 'edit' }
       },
       {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/admin/edit'),
-        name: 'EditAdmin',
-        meta: { title: 'EditAdmin', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import('@/views/admin/detail'),
+        path: 'admin/detail/:id(\\d+)',
+        component: () => import('@/views/account/AdminDetail'),
         name: 'AdminDetail',
         meta: { title: 'AdminDetail', noCache: true },
         hidden: true
-      }
-    ]
-  },
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user/list',
-    name: 'User',
-    meta: {
-      title: 'User',
-      icon: 'user'
-    },
-    children: [
+      },
       {
-        path: 'list',
-        component: () => import('@/views/user/list'),
+        path: 'user/list',
+        component: () => import('@/views/account/UserList'),
         name: 'UserList',
         meta: { title: 'UserList', icon: 'list' }
       },
       {
-        path: 'create',
-        component: () => import('@/views/user/create'),
-        name: 'CreateUser',
-        meta: { title: 'CreateUser', icon: 'edit' }
+        path: 'user/create',
+        component: () => import('@/views/account/UserCreate'),
+        name: 'UserCreate',
+        meta: { title: 'UserCreate', icon: 'edit' }
       },
       {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/user/edit'),
-        name: 'EditUser',
-        meta: { title: 'EditUser', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import('@/views/user/detail'),
+        path: 'user/detail/:id(\\d+)',
+        component: () => import('@/views/account/UserDetail'),
         name: 'UserDetail',
         meta: { title: 'UserDetail', noCache: true },
         hidden: true
@@ -318,7 +292,7 @@ export const constantRoutes = [
 
 /**
  * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
+ * the routes that need to be dynamically loaded based on user.js roles
 */
 export const asyncRoutes = [
   {
@@ -583,7 +557,7 @@ export const asyncRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://github.com/PanJiaChen/vue-element-admin',
+        path: 'https://github.com/PanJiaChen/vue-element-account',
         meta: { title: 'externalLink', icon: 'link' }
       }
     ]

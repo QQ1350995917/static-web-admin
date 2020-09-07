@@ -193,7 +193,7 @@
           scopes: [],
           sorts: []
         },
-        list: null,
+        list: [],
       };
     },
     created() {
@@ -237,8 +237,7 @@
         });
       },
       resetForm(formName) {
-        this.$router.go(0);
-//        this.$refs[formName].resetFields();
+        this.$refs[formName].resetFields();
       },
       handleAccountAble(row) {
 

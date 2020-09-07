@@ -127,7 +127,7 @@
             icon="el-icon-delete"
             @onConfirm="handleAccountDelete(scope.row)"
           >
-            <el-button slot="reference"  type="danger" icon="el-icon-delete" round></el-button>
+            <el-button slot="reference" type="danger" icon="el-icon-delete" round></el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -140,7 +140,8 @@
   export default {
     components: {
       ElPopconfirm,
-      ElFormItem},
+      ElFormItem
+    },
     name: 'AdminDetail',
     data() {
       return {
@@ -186,14 +187,15 @@
           ]
         },
         query: {
+          uid: this.$route.params.id,
           page: {
             index: 0,
             size: 12
           },
-          scopes: [],
-          sorts: []
+          scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
+          sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
-        list: null,
+        list: [],
       };
     },
     created() {
@@ -212,7 +214,7 @@
         })
       },
       requestForUserAccountList(){
-        this.$store.dispatch('account/adminAccountList', this.adminUserForm.uid)
+        this.$store.dispatch('account/adminAccountList', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.list = response.data.elements;
@@ -237,14 +239,62 @@
         });
       },
       resetForm(formName) {
-        this.$router.go(0);
-//        this.$refs[formName].resetFields();
+        this.$refs[formName].resetFields();
       },
-      handleAccountAble(row) {
-
+      handleAccountAble(row){
+        if (row.able == 0) {
+          this.handleAccountEnable(row);
+        } else if (row.able == 1) {
+          this.handleAccountDisable(row);
+        } else {
+          this.$message.error('参数错误');
+        }
+      },
+      handleAccountEnable(row){
+        this.$store.dispatch('account/adminAccountEnable', {
+          'accountId': row.id,
+          'userId': parseInt(this.$route.params.id)
+        })
+          .then(() => {
+            row.able = 1;
+            this.$message({
+              message: '启用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
+        })
+      },
+      handleAccountDisable(row){
+        this.$store.dispatch('account/adminAccountDisable', {
+          'accountId': row.id,
+          'userId': parseInt(this.$route.params.id)
+        })
+          .then(() => {
+            row.able = 0;
+            this.$message({
+              message: '禁用成功',
+              type: 'success'
+            });
+          }).catch((error) => {
+          this.$message.error(error);
+        })
       },
       handleAccountDelete(row) {
-
+        this.$store.dispatch('account/adminAccountDelete', {
+          'accountId': row.id,
+          'userId': parseInt(this.$route.params.id)
+        })
+          .then(() => {
+            row.able = 0;
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.requestForUserAccountList();
+          }).catch((error) => {
+          this.$message.error(error);
+        })
       }
     }
   }

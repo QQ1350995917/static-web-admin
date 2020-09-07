@@ -46,10 +46,32 @@ export function adminUserDelete(uids) {
   })
 }
 
-export function adminAccountList(uid) {
+export function adminAccountList(uid,page, scopes, sorts) {
   return request({
-    url: '/account/api/admin/admin/account/' + uid,
+    url: '/account/api/admin/admin/account/' + uid + '?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),
     method: 'get'
+  })
+}
+
+
+export function adminAccountEnable(params) {
+  return request({
+    url: '/account/api/admin/admin/account/enable?userId=' + params.userId + '&accountId=' + params.accountId,
+    method: 'patch'
+  })
+}
+
+export function adminAccountDisable(params) {
+  return request({
+    url: '/account/api/admin/admin/account/disable?userId=' + params.userId + '&accountId=' + params.accountId,
+    method: 'patch'
+  })
+}
+
+export function adminAccountDelete(params) {
+  return request({
+    url: '/account/api/admin/admin/account?userId=' + params.userId + '&accountId=' + params.accountId,
+    method: 'delete'
   })
 }
 
@@ -101,5 +123,29 @@ export function userAccountList(uid) {
   return request({
     url: '/account/api/admin/user/account/' + uid,
     method: 'get'
+  })
+}
+
+export function userAccountEnable(uids) {
+  return request({
+    url: '/account/api/user/account/enable',
+    method: 'patch',
+    data: uids
+  })
+}
+
+export function userAccountDisable(uids) {
+  return request({
+    url: '/account/api/user/account/disable',
+    method: 'patch',
+    data: uids
+  })
+}
+
+export function userAccountDelete(uids) {
+  return request({
+    url: '/account/api/user/account',
+    method: 'delete',
+    data: uids
   })
 }

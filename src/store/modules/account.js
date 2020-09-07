@@ -5,7 +5,10 @@ import {
   adminUserEnable,
   adminUserDisable,
   adminUserDelete,
-  adminAccountList
+  adminAccountList,
+  adminAccountEnable,
+  adminAccountDisable,
+  adminAccountDelete
 } from '@/api/account'
 
 import {
@@ -94,11 +97,50 @@ const actions = {
       })
     })
   },
-  adminAccountList(commit, uid){
+  adminAccountList(commit, query){
     return new Promise((resolve, reject) => {
-      adminAccountList(uid).then(response => {
+      adminAccountList(query.uid,query.page, query.scopes, query.sorts).then(response => {
         const data = response
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  adminAccountEnable(commit, params){
+    return new Promise((resolve, reject) => {
+      adminAccountEnable(params).then(response => {
+        if (response.meta.code == 200) {
+          resolve(response.data)
+        } else {
+          reject(response.meta)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  adminAccountDisable(commit, params){
+    return new Promise((resolve, reject) => {
+      adminAccountDisable(params).then(response => {
+        if (response.meta.code == 200) {
+          resolve(response.data)
+        } else {
+          reject(response.meta)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  adminAccountDelete(commit, params){
+    return new Promise((resolve, reject) => {
+      adminAccountDelete(params).then(response => {
+        if (response.meta.code == 200) {
+          resolve(response.data)
+        } else {
+          reject(response.meta)
+        }
       }).catch(error => {
         reject(error)
       })

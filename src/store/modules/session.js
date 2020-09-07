@@ -72,9 +72,10 @@ const actions = {
           setAccountId(response.data.session.aid)
           removeAnonymousToken();
           resolve(response)
+        } else {
+          reject(response.meta)
         }
       }).catch(error => {
-        console.log("error" + error)
         reject(error)
       })
     })

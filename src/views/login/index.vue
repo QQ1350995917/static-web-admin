@@ -216,6 +216,7 @@
             this.loading = true
             this.$store.dispatch('session/login', this.loginForm)
               .then((response) => {
+                console.log(response)
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/'})
                 } else if (response.meta.code == 417) {
@@ -225,6 +226,7 @@
                 }
                 this.loading = false
               }).catch((error) => {
+              this.$message.error(error.message);
               this.loading = false
             })
           } else {

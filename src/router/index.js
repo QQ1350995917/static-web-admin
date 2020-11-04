@@ -171,6 +171,36 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/monitor',
+    component: Layout,
+    redirect: 'monitor',
+    name: 'Monitor',
+    meta: {
+      title: 'Monitor',
+      icon: 'documentation'
+    },
+    children: [
+      {
+        path: 'HostDashboard',
+        component: () => import('@/views/monitor/dashboard'),
+        name: 'HostDashboard',
+        meta: { title: 'HostDashboard', icon: 'documentation' }
+      },
+      {
+        path: 'Host',
+        component: () => import('@/views/monitor/host'),
+        name: 'Host',
+        meta: { title: 'Host', icon: 'documentation' }
+      },
+      {
+        path: 'Process',
+        component: () => import('@/views/monitor/process'),
+        name: 'Process',
+        meta: { title: 'Process', icon: 'documentation' }
+      },
+    ]
+  },
+  {
     path: '/search',
     component: Layout,
     redirect: 'search',

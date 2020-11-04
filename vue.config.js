@@ -77,6 +77,29 @@ module.exports = {
           console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
         }
       },
+      '/monitor': {
+        target: `http://localhost:11221`,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/monitor': '/monitor'
+        },
+        onProxyReq: function (proxyReq, req, res) {
+          //实在不知道代理后的路径，可以在这里打印出出来看看
+          console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
+        }
+      },
+
+      // '/*': {
+      //   target: `http://localhost:11221`,
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/*': '/*'
+      //   },
+      //   onProxyReq: function (proxyReq, req, res) {
+      //     //实在不知道代理后的路径，可以在这里打印出出来看看
+      //     console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
+      //   }
+      // },
     },
     after(app) {
       require('@babel/register')

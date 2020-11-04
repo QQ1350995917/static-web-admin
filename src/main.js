@@ -22,6 +22,9 @@ import * as filters from './filters' // global filters
 
 import { mockXHR } from '../mock' // simulation data
 
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
 // mock api in github pages site build
 if (process.env.NODE_ENV === 'production') { mockXHR() }
 

@@ -7,9 +7,9 @@ export function requestHostsApi(index, size) {
   })
 }
 
-export function requestHostCpuStatApi(index, size) {
+export function requestHostCpuStatApi(groupName, nodeName,times) {
   return request({
-    url: '/monitor/api/admin/host/cpu/stat',
+    url: '/monitor/api/admin/host/cpu/stat/statistics/' + groupName + '/' + nodeName + '/' + times,
     method: 'get'
   })
 }

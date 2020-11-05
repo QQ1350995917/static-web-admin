@@ -42,7 +42,7 @@
         requestHostCpuStatApi(pageIndex - 1, pageSize).then((res) => {
           if (res.meta.code === 200) {
             res.data.elements.forEach(function (item) {
-              g.yData.push(item.guestNice);
+              g.yData.push(item.cpuCoreName);
               g.xData.push(item.createTime);
             });
             this.refreshEchart();

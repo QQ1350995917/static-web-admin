@@ -181,17 +181,84 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'HostDashboard',
-        component: () => import('@/views/monitor/dashboard'),
-        name: 'HostDashboard',
-        meta: { title: 'HostDashboard', icon: 'documentation' }
-      },
-      {
         path: 'Host',
         component: () => import('@/views/monitor/host'),
         name: 'Host',
         meta: { title: 'Host', icon: 'documentation' }
       },
+      {
+        path: 'HostCpu',
+        component: () => import('@/views/monitor/hostCpu'),
+        name: 'HostCpu',
+        meta: { title: 'HostCpu', icon: 'documentation' }
+      },
+      {
+        path: 'HostCpuStat',
+        component: () => import('@/views/monitor/hostCpuStat'),
+        name: 'HostCpuStat',
+        meta: { title: 'HostCpuStat', icon: 'documentation' }
+      },
+      {
+        path: 'HostDiskStat',
+        component: () => import('@/views/monitor/hostDiskStat'),
+        name: 'HostDiskStat',
+        meta: { title: 'HostDiskStat', icon: 'documentation' }
+      },
+      {
+        path: 'HostEthernetStat',
+        component: () => import('@/views/monitor/hostEthernetStat'),
+        name: 'HostEthernetStat',
+        meta: { title: 'HostEthernetStat', icon: 'documentation' }
+      },
+      {
+        path: 'HostLoadStat',
+        component: () => import('@/views/monitor/hostLoadStat'),
+        name: 'HostLoadStat',
+        meta: { title: 'HostLoadStat', icon: 'documentation' }
+      },
+      {
+        path: 'HostLoggedStat',
+        component: () => import('@/views/monitor/hostLoggedStat'),
+        name: 'HostLoggedStat',
+        meta: { title: 'HostLoggedStat', icon: 'documentation' }
+      },
+      {
+        path: 'HostMemoryStat',
+        component: () => import('@/views/monitor/hostMemoryStat'),
+        name: 'HostMemoryStat',
+        meta: { title: 'HostMemoryStat', icon: 'documentation' }
+      },
+      {
+        path: 'DashboardHost',
+        component: () => import('@/views/monitor/dashboardHost'),
+        name: 'DashboardHost',
+        meta: { title: 'DashboardHost', icon: 'documentation' }
+      },
+      {
+        path: 'DashboardHostCpuStat',
+        component: () => import('@/views/monitor/dashboardHostCpuStat'),
+        name: 'DashboardHostCpuStat',
+        meta: { title: 'DashboardHostCpuStat', icon: 'documentation' }
+      },
+      {
+        path: 'DashboardHostLoadStat',
+        component: () => import('@/views/monitor/dashboardHostLoadStat'),
+        name: 'DashboardHostLoadStat',
+        meta: { title: 'DashboardHostLoadStat', icon: 'documentation' }
+      },
+      {
+        path: 'DashboardHostLoggedStat',
+        component: () => import('@/views/monitor/dashboardHostLoggedStat'),
+        name: 'DashboardHostLoggedStat',
+        meta: { title: 'DashboardHostLoggedStat', icon: 'documentation' }
+      },
+      {
+        path: 'DashboardHostMemoryStat',
+        component: () => import('@/views/monitor/dashboardHostMemoryStat'),
+        name: 'DashboardHostMemoryStat',
+        meta: { title: 'DashboardHostMemoryStat', icon: 'documentation' }
+      },
+
       {
         path: 'Process',
         component: () => import('@/views/monitor/process'),

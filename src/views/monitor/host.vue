@@ -17,14 +17,16 @@
     <el-main>
       <template>
         <el-table
-          :data="hosts"
-          stripe
+          :data="list"
+          stripe height="750"
           style="width: 100%">
           <el-table-column
+            fixed
             prop="groupName"
             label="逻辑组" >
           </el-table-column>
           <el-table-column
+            fixed
             prop="nodeName"
             label="主机名" >
           </el-table-column>
@@ -80,6 +82,10 @@
             prop="updateTime"
             label="更新时间">
           </el-table-column>
+          <el-table-column
+            fixed
+            label="选项">
+          </el-table-column>
         </el-table>
       </template>
     </el-main>
@@ -98,7 +104,7 @@
 </template>
 <script>
   import {
-    requestHostsApi
+    requestHostApi
   } from '@/api/monitor/host'
   import ElFooter from "../../../node_modules/element-ui/packages/footer/src/main";
   export default {
@@ -107,29 +113,30 @@
     data() {
       return {
         searchKeyword: '',
-        hosts: [],
+        scopeItems: [],
+        list: [],
         pageIndex: 1,
         pageSize: 12,
         total: 0
       }
     },
     mounted: function () {
-      this.doRequestHosts(this.pageIndex, this.pageSize)
+      this.doRequestHost(this.pageIndex, this.pageSize)
     },
     methods: {
       handleSizeChange: function (currentPageSize) {
         this.pageSize = currentPageSize;
-        this.doRequestBooks(this.pageIndex, this.pageSize)
+        this.doRequestHost(this.pageIndex, this.pageSize)
       },
       handleCurrentChange: function (currentPage) {
         this.pageIndex = currentPage;
-        this.doRequestBooks(this.pageIndex, this.pageSize)
+        this.doRequestHost(this.pageIndex, this.pageSize)
       },
-      doRequestHosts(pageIndex, pageSize){
-        requestHostsApi(pageIndex - 1, pageSize).then((res) => {
-          this.hosts = []
+      doRequestHost(pageIndex, pageSize){
+        requestHostApi(this.scopeItems,pageIndex - 1, pageSize).then((res) => {
+          this.list = []
           if (res.meta.code === 200) {
-            this.hosts = res.data.elements;
+            this.list = res.data.elements;
             this.pageIndex = res.data.index + 1;
             this.pageSize = res.data.size;
             this.total = res.data.total;
@@ -138,11 +145,11 @@
           }
         });
       },
-      onBookSearch: function (e) {
+      onSearch: function (e) {
         var e = window.event || e;
         var keyCode = e.keyCode || e.which || e.charCode;
         if (keyCode == 13 && this.searchKeyword) {
-          this.$router.push({path: '/book/search?type=book&keyword=' + this.searchKeyword});
+
         }
       },
     }

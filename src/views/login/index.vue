@@ -93,10 +93,15 @@
 </template>
 
 <script>
+  import { getPublickey } from '@/utils/validate'
   import { validUsername } from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
   import { setAnonymousToken } from '@/utils/auth'
+
+  import {
+    getPublicKey
+  } from '@/api/key';
 
   export default {
     name: 'Login',
@@ -159,6 +164,7 @@
       window.addEventListener('storage', this.afterQRScan)
     },
     mounted() {
+      this.getPublicKey();
       this.sessionInit();
       if (this.loginForm.username === '') {
         this.$refs.username.focus()
@@ -172,9 +178,18 @@
       window.removeEventListener('storage', this.afterQRScan)
     },
     methods: {
+      getPublicKey() {
+        this.$store.dispatch('key/getPublicKey')
+          .then((response) => {
+            console.log("key:"+ response)
+          })
+          .catch((exception) => {
+            console.log("key:"+ exception)
+          })
+      },
       sessionInit() {
         this.loading = true
-        this.$store.dispatch('session/init')
+        this.$store.dispatch('accountSession/init')
           .then((response) => {
             if (response.meta.code == 200) {
               setAnonymousToken(response.data.token);

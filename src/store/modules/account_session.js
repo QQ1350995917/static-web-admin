@@ -1,4 +1,4 @@
-import { loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi } from '@/api/session'
+import { loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi } from '@/api/account/session'
 import {
   getToken,
   getUserId,

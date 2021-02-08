@@ -9,27 +9,27 @@ export function init() {
 
 export function refreshCaptcha(){
   return request({
-    url: '/account/api/admin/session/captcha',
+    url: '/service/account/api/admin/session/captcha',
     method: 'get'
   })
 }
 
-export function loginApi(data) {
+export function login(data) {
   return request({
-    url: '/account/api/admin/session',
+    url: '/service/account/api/admin/session',
     method: 'put',
     data
   })
 }
 
-export function getInfoApi() {
+export function getSessionInfo() {
   return request({
     url: '/account/api/admin/session',
     method: 'get'
   })
 }
 
-export function logoutApi() {
+export function logout() {
   return request({
     url: '/account/api/admin/session',
     method: 'delete'

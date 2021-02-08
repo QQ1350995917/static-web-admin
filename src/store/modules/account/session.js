@@ -1,9 +1,9 @@
 import {
   init,
   refreshCaptcha,
-  loginApi,
-  logoutApi,
-  getInfoApi
+  login,
+  logout,
+  getInfo
 } from '@/api/account/session'
 
 import {
@@ -67,7 +67,7 @@ const actions = {
   login({commit}, userInfo) {
     const {username, password, captchaExpect} = userInfo
     return new Promise((resolve, reject) => {
-      loginApi({
+      login({
         loginName: username.trim(),
         loginPwd: password.trim(),
         captcha: captchaExpect.trim()
@@ -91,7 +91,7 @@ const actions = {
   // get user info
   getInfo({commit, state}) {
     return new Promise((resolve, reject) => {
-      getInfoApi().then(response => {
+      getInfo().then(response => {
         if (!response) {
           reject('Verification failed, please Login again.')
         }
@@ -118,7 +118,7 @@ const actions = {
   // user logout
   logout({commit, state}) {
     return new Promise((resolve, reject) => {
-      logoutApi(state.token).then(() => {
+      logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()

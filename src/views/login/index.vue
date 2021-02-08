@@ -177,10 +177,10 @@
       getAdminPublicKey() {
         this.$store.dispatch('accountKey/getAdminPublicKey')
           .then((response) => {
-            console.log("key:"+ response)
+
           })
           .catch((exception) => {
-            console.log("key:"+ exception)
+
           })
       },
       sessionInit() {

@@ -9,7 +9,7 @@ import {
   adminAccountEnable,
   adminAccountDisable,
   adminAccountDelete
-} from '@/api/account'
+} from '@/api/account/account'
 
 import {
   userCreate,
@@ -19,7 +19,7 @@ import {
   userUserDisable,
   userUserDelete,
   userAccountList
-} from '@/api/account'
+} from '@/api/account/account'
 
 const actions = {
   adminCreate(commit, state){

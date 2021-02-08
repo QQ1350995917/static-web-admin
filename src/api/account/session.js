@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
-export function loginPageInit() {
+export function init() {
   return request({
-    url: '/account/api/admin/session/init',
-    method: 'get'
+    url: '/service/account/api/admin/session/init',
+    method: 'GET'
   })
 }
 

@@ -56,10 +56,10 @@ module.exports = {
       //   }
       // },
       '/account': {
-        target: `http://localhost:11221`,
+        target: `http://localhost:12020`,
         changeOrigin: true,
         pathRewrite: {
-          '^/account': '/account'
+          '^/service/account': '/account'
         },
         onProxyReq: function (proxyReq, req, res) {
           //实在不知道代理后的路径，可以在这里打印出出来看看
@@ -67,10 +67,10 @@ module.exports = {
         }
       },
       '/book': {
-        target: `http://localhost:11221`,
+        target: `http://localhost:12020`,
         changeOrigin: true,
         pathRewrite: {
-          '^/book': '/book'
+          '^/service/book': '/book'
         },
         onProxyReq: function (proxyReq, req, res) {
           //实在不知道代理后的路径，可以在这里打印出出来看看
@@ -78,10 +78,10 @@ module.exports = {
         }
       },
       '/monitor': {
-        target: `http://localhost:11221`,
+        target: `http://localhost:12020`,
         changeOrigin: true,
         pathRewrite: {
-          '^/monitor': '/monitor'
+          '^/service/monitor': '/monitor'
         },
         onProxyReq: function (proxyReq, req, res) {
           //实在不知道代理后的路径，可以在这里打印出出来看看
@@ -90,7 +90,7 @@ module.exports = {
       },
 
       // '/*': {
-      //   target: `http://localhost:11221`,
+      //   target: `http://localhost:12020`,
       //   changeOrigin: true,
       //   pathRewrite: {
       //     '^/*': '/*'

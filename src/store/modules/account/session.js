@@ -1,4 +1,11 @@
-import { loginPageInit, refreshCaptcha, loginApi, logoutApi, getInfoApi } from '@/api/account/session'
+import {
+  init,
+  refreshCaptcha,
+  loginApi,
+  logoutApi,
+  getInfoApi
+} from '@/api/account/session'
+
 import {
   getToken,
   getUserId,
@@ -40,7 +47,7 @@ const mutations = {
 const actions = {
   init() {
     return new Promise((resolve, reject) => {
-      loginPageInit().then(response => {
+      init().then(response => {
         resolve(response)
       }).catch(error => {
         reject(error)

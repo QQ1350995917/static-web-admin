@@ -99,10 +99,6 @@
   import SocialSign from './socialsignin'
   import { setAnonymousToken } from '@/utils/auth'
 
-  import {
-    getPublicKey
-  } from '@/api/key';
-
   export default {
     name: 'Login',
     components: {LangSelect, SocialSign},
@@ -164,7 +160,7 @@
       window.addEventListener('storage', this.afterQRScan)
     },
     mounted() {
-      this.getPublicKey();
+      this.getAdminPublicKey();
       this.sessionInit();
       if (this.loginForm.username === '') {
         this.$refs.username.focus()
@@ -178,8 +174,8 @@
       window.removeEventListener('storage', this.afterQRScan)
     },
     methods: {
-      getPublicKey() {
-        this.$store.dispatch('key/getPublicKey')
+      getAdminPublicKey() {
+        this.$store.dispatch('accountKey/getAdminPublicKey')
           .then((response) => {
             console.log("key:"+ response)
           })

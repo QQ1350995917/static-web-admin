@@ -5,13 +5,15 @@ const getters = {
   device: state => state.app.device,
   visitedViews: state => state.tagsView.visitedViews,
   cachedViews: state => state.tagsView.cachedViews,
-  token: state => state.session.token,
-  avatar: state => state.session.avatar,
-  name: state => state.session.name,
-  introduction: state => state.session.introduction,
-  roles: state => state.session.roles,
+  token: state => state.accountSession.token,
+  avatar: state => state.accountSession.avatar,
+  name: state => state.accountSession.name,
+  introduction: state => state.accountSession.introduction,
+  roles: state => state.accountSession.roles,
   permission_routes: state => state.permission.routes,
   addRoutes: state => state.permission.addRoutes,
   errorLogs: state => state.errorLog.logs
 }
 export default getters
+
+// state后边的变量是store/index.js中的modules

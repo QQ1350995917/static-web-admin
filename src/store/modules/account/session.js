@@ -12,10 +12,12 @@ import {
   setToken,
   setUserId,
   setAccountId,
+  setAnonymousToken,
   removeAnonymousToken,
   removeToken,
   removeUserId
 } from '@/utils/auth'
+
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -48,6 +50,8 @@ const actions = {
   init() {
     return new Promise((resolve, reject) => {
       init().then(response => {
+        setAnonymousToken(response.data.token)
+        setUserId(response.data.uid)
         resolve(response)
       }).catch(error => {
         reject(error)
@@ -65,18 +69,17 @@ const actions = {
   },
   // user login
   login({commit}, userInfo) {
-    const {username, password, captchaExpect} = userInfo
+    const {username, loginPwd, captchaExpect} = userInfo
     return new Promise((resolve, reject) => {
       login({
         loginName: username.trim(),
-        loginPwd: password.trim(),
+        loginPwd: loginPwd,
         captcha: captchaExpect.trim()
       }).then(response => {
         if (response.meta.code == 200) {
-          commit('SET_TOKEN', response.data.session.token)
-          setToken(response.data.session.token)
-          setUserId(response.data.session.uid)
-          setAccountId(response.data.session.aid)
+          commit('SET_TOKEN', response.data.token)
+          setToken(response.data.token)
+          setUserId(response.data.uid)
           removeAnonymousToken();
           resolve(response)
         } else {

@@ -93,11 +93,12 @@
 </template>
 
 <script>
-  import { getPublickey } from '@/utils/validate'
   import { validUsername } from '@/utils/validate'
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
-  import { setAnonymousToken } from '@/utils/auth'
+  import { setUserId,setAnonymousToken } from '@/utils/auth'
+  import jsencrypt from 'jsencrypt/bin/jsencrypt.min.js'
+  import md5 from 'js-md5'
 
   export default {
     name: 'Login',
@@ -111,8 +112,8 @@
         }
       }
       const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error('The password can not be less than 6 digits'))
+        if (value.length < 5) {
+          callback(new Error('The password can not be less than 5 digits'))
         } else {
           callback()
         }
@@ -130,9 +131,11 @@
         }
       }
       return {
+        publicKey: '',
         loginForm: {
-          username: 'luoguanzhong',
-          password: 'luoguanzhong',
+          username: 'admin',
+          password: 'admin',
+          loginPwd: 'VwNculZAt3heV9heu30Qe0GyLcqau907KGmYPpOS3WBdZZ9hZ0uKMSRa64GZz3eEUqVQazztAFqdeOFrbrAlOxhFJ/vCfNMKT6h7fwxhnkVjyghT1i2G2cAukk00oYQS5cvQRbWzdWnoF50yTUd7rCssnri6Qevd27Bmeiaz46A=',
           captchaExpect: ''
         },
         loginRules: {
@@ -177,7 +180,9 @@
       getAdminPublicKey() {
         this.$store.dispatch('accountKey/getAdminPublicKey')
           .then((response) => {
-
+            if (response.meta.code == 200) {
+              this.publicKey = response.data.data;
+            }
           })
           .catch((exception) => {
 
@@ -188,7 +193,6 @@
         this.$store.dispatch('accountSession/init')
           .then((response) => {
             if (response.meta.code == 200) {
-              setAnonymousToken(response.data.token);
               this.captchaRequired = response.data.captchaRequired;
               this.refreshCaptcha();
             }
@@ -200,7 +204,7 @@
       refreshCaptcha() {
         if (this.captchaRequired) {
           this.loading = true
-          this.$store.dispatch('session/captcha')
+          this.$store.dispatch('accountSession/captcha')
             .then((response) => {
               if (response.meta.code == 200) {
                 this.captcha = response.data.base64;
@@ -222,12 +226,12 @@
         })
       },
       handleLogin() {
+//        this.loginForm.loginPwd = this.encrypt(this.publicKey,this.loginForm.password)
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true
-            this.$store.dispatch('session/login', this.loginForm)
+            this.$store.dispatch('accountSession/login', this.loginForm)
               .then((response) => {
-                console.log(response)
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/'})
                 } else if (response.meta.code == 417) {
@@ -262,7 +266,12 @@
             alert('第三方登录失败')
           }
         }
-      }
+      },
+      encrypt(publicKey,password){
+        let en = new jsencrypt();
+        en.setPublicKey(publicKey);
+        return en.encrypt(md5(password))
+      },
     }
   }
 </script>

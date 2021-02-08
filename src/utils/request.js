@@ -24,12 +24,12 @@ service.interceptors.request.use(
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['x-token'] = getToken();
-      config.headers['x-uid'] = getUserId()
-      config.headers['x-aid'] = getAccountId()
+      config.headers['x-uid'] = getUserId();
+      config.headers['x-aid'] = getAccountId();
     } else {
       config.headers['x-token'] = getAnonymousToken();
-      config.headers['x-uid'] = 0
-      config.headers['x-aid'] = 0
+      config.headers['x-uid'] = getUserId();
+      config.headers['x-aid'] = getAccountId();
     }
     return config
   },
@@ -84,8 +84,6 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log("error")
-    console.log('err' + error) // for debug
     Message({
       message: error.message,
       type: 'error',

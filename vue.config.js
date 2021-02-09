@@ -55,40 +55,17 @@ module.exports = {
       //     console.log("原路径2：" + req.originalUrl, "代理路径2：" + req.path)
       //   }
       // },
-      '/account': {
+      '/service': {
         target: `http://localhost:12020`,
         changeOrigin: true,
         pathRewrite: {
-          '^/service/account': '/account'
+          '^/service': ''
         },
         onProxyReq: function (proxyReq, req, res) {
           //实在不知道代理后的路径，可以在这里打印出出来看看
           console.log("原路径：" + req.originalUrl, "代理路径：" + req.path)
         }
       },
-      '/book': {
-        target: `http://localhost:12020`,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/service/book': '/book'
-        },
-        onProxyReq: function (proxyReq, req, res) {
-          //实在不知道代理后的路径，可以在这里打印出出来看看
-          console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
-        }
-      },
-      '/monitor': {
-        target: `http://localhost:12020`,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/service/monitor': '/monitor'
-        },
-        onProxyReq: function (proxyReq, req, res) {
-          //实在不知道代理后的路径，可以在这里打印出出来看看
-          console.log('原路径：' + req.originalUrl, '代理路径：' + req.path)
-        }
-      },
-
       // '/*': {
       //   target: `http://localhost:12020`,
       //   changeOrigin: true,

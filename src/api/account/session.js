@@ -24,14 +24,14 @@ export function login(data) {
 
 export function getInfo() {
   return request({
-    url: '/account/api/admin/session',
+    url: '/service/account/api/admin/session',
     method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/account/api/admin/session',
+    url: '/service/account/api/admin/session',
     method: 'delete'
   })
 }

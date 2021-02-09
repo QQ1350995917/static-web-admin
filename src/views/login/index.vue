@@ -270,7 +270,7 @@
       encrypt(publicKey,password){
         let en = new jsencrypt();
         en.setPublicKey(publicKey);
-        return en.encrypt(md5(password))
+        return en.encrypt(password)
       },
     }
   }

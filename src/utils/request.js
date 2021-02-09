@@ -21,15 +21,13 @@ service.interceptors.request.use(
     config.headers['x-cv'] = '1.0.0-SNAPSHOT'
     config.headers['x-sv'] = '1.0.0-SNAPSHOT'
     config.headers['x-dt'] = new Date().getTime()
+    config.headers['x-uid'] = getUserId();
+    config.headers['x-aid'] = getAccountId();
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['x-token'] = getToken();
-      config.headers['x-uid'] = getUserId();
-      config.headers['x-aid'] = getAccountId();
     } else {
       config.headers['x-token'] = getAnonymousToken();
-      config.headers['x-uid'] = getUserId();
-      config.headers['x-aid'] = getAccountId();
     }
     return config
   },

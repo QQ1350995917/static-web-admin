@@ -22,7 +22,7 @@ export function login(data) {
   })
 }
 
-export function getSessionInfo() {
+export function getInfo() {
   return request({
     url: '/account/api/admin/session',
     method: 'get'

@@ -22,7 +22,6 @@ export function getToken() {
 }
 
 export function setToken(token) {
-  console.log("setToken " + token)
   return Cookies.set(tokenKey, token)
 }
 
@@ -31,12 +30,10 @@ export function removeToken() {
 }
 
 export function getUserId() {
-  console.log("get" + Cookies.get(userIdKey) == undefined ? 0 : Cookies.get(userIdKey))
   return Cookies.get(userIdKey) == undefined ? 0 : Cookies.get(userIdKey);
 }
 
 export function setUserId(uid) {
-  console.log("set" + uid)
   return Cookies.set(userIdKey, uid == undefined ? 0 : uid)
 }
 

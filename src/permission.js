@@ -41,6 +41,7 @@ router.beforeEach(async(to, from, next) => {
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
         } catch (error) {
+          console.log("error reset")
           // remove token and go to login page to re-login
           await store.dispatch('accountSession/resetToken')
           Message.error(error || 'Has Error')

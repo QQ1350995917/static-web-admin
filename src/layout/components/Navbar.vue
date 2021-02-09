@@ -78,7 +78,7 @@
         this.$store.dispatch('app/toggleSideBar')
       },
       async logout() {
-        await this.$store.dispatch('session/logout')
+        await this.$store.dispatch('accountSession/logout')
         this.$router.push(`/login?redirect=${this.$route.fullPath}`)
       }
     }

@@ -144,7 +144,7 @@
     },
     methods: {
       requestAdminUserList() {
-        this.$store.dispatch('account/adminUserList', this.query)
+        this.$store.dispatch('account/list', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = response.data.index;

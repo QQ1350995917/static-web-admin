@@ -6,9 +6,10 @@ import errorLog from './modules/errorLog'
 import permission from './modules/permission'
 import tagsView from './modules/tagsView'
 import settings from './modules/settings'
-import account from './modules/account/account'
+import account from './modules/account/admin'
 import accountKey from './modules/account/key'
 import accountSession from './modules/account/session'
+import educationArticle from './modules/education/article'
 import getters from './getters'
 
 Vue.use(Vuex)
@@ -23,6 +24,7 @@ const store = new Vuex.Store({
     account,
     accountKey,
     accountSession,
+    educationArticle
   },
   getters
 })

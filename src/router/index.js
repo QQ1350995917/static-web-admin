@@ -294,6 +294,24 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/edu',
+    component: Layout,
+    redirect: 'edu',
+    name: 'Education',
+    meta: {
+      title: 'Education',
+      icon: 'documentation'
+    },
+    children: [
+      {
+        path: 'Article',
+        component: () => import('@/views/education/article'),
+        name: 'Article',
+        meta: { title: 'Article', icon: 'documentation' }
+      }
+    ]
+  },
+  {
     path: '/documentation',
     component: Layout,
     children: [

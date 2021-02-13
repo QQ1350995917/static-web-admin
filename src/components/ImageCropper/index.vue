@@ -193,7 +193,7 @@ export default {
     // 是否支持跨域
     withCredentials: {
       type: Boolean,
-      'default': false
+      'default': true
     }
   },
   data() {

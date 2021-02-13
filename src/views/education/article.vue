@@ -11,7 +11,38 @@
         lazy>
       </el-tree>
     </el-aside>
-    <el-main>Main</el-main>
+    <el-main>
+      <Player
+
+        theme="dark"
+        style="--vm-player-theme: #e86c8b;"
+      >
+        <!--https://github.com/vime-js/vime-->
+        <!--<Video-->
+          <!--crossOrigin-->
+          <!--poster="https://media.vimejs.com/poster.png"-->
+        <!--&gt;-->
+          <!--<source-->
+            <!--data-src="https://media.vimejs.com/720p.mp4"-->
+            <!--type="video/mp4"-->
+          <!--/>-->
+          <!--<track-->
+            <!--default-->
+            <!--kind="subtitles"-->
+            <!--src="https://media.vimejs.com/subs/english.vtt"-->
+            <!--srclang="en"-->
+            <!--label="English"-->
+          <!--/>-->
+        <!--</Video>-->
+        <!--<DefaultUi />-->
+
+        <Audio cross-origin>
+          <!--<source data-src="http://localhost/audio/test.audio.mp3" type="audio/mp3" />-->
+          <source data-src="/audio/test.audio.mp3" type="audio/mp3" />
+        </Audio>
+        <DefaultUi />
+      </Player>
+    </el-main>
   </el-container>
 </template>
 <script>
@@ -26,12 +57,21 @@
     requestDeleteBooksApi,
     requestDeleteCancelBooksApi,
   } from '@/api/book/book'
+
+  import { Player, Video, Audio, DefaultUi } from '@vime/vue';
+
   import ElFooter from "../../../node_modules/element-ui/packages/footer/src/main";
   export default {
     name: 'Article',
+    components: {
+//      https://vimejs.com/demo
+      Player,
+//      Video,
+      Audio,
+      DefaultUi,
+    },
     data() {
       return {
-
         pid: 0,
         tables: [],
         defaultProps: {     // 修改el-tree默认data数组参数

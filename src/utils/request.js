@@ -8,7 +8,7 @@ const service = axios.create({
   // api 的 base_url
   baseURL: process.env.VUE_APP_BASE_API,
   // 跨域请求时发送 cookies
-  withCredentials: false,
+  withCredentials: true,
   // request timeout
   timeout: 1200000
 })
@@ -17,6 +17,8 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // Do something before request is sent
+    config.headers['Access-Control-Allow-Origin'] = '*'
+    config.headers['Access-Control-Allow-Method'] = 'POST,GET'
     config.headers['x-os'] = 'web'
     config.headers['x-cv'] = '1.0.0-SNAPSHOT'
     config.headers['x-sv'] = '1.0.0-SNAPSHOT'

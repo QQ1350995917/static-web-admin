@@ -25,6 +25,9 @@ import { mockXHR } from '../mock' // simulation data
 import echarts from 'echarts'
 Vue.prototype.$echarts = echarts
 
+import JSEncrypt from 'jsencrypt';//引入模块
+Vue.prototype.$jsEncrypt = JSEncrypt;//配置全局变量
+
 // mock api in github pages site build
 if (process.env.NODE_ENV === 'production') { mockXHR() }
 

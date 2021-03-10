@@ -97,8 +97,6 @@
   import LangSelect from '@/components/LangSelect'
   import SocialSign from './socialsignin'
   import { setUserId,setAnonymousToken } from '@/utils/auth'
-  import jsencrypt from 'jsencrypt/bin/jsencrypt.min.js'
-  import md5 from 'js-md5'
 
   export default {
     name: 'Login',
@@ -181,7 +179,7 @@
         this.$store.dispatch('accountKey/getAdminPublicKey')
           .then((response) => {
             if (response.meta.code == 200) {
-              this.publicKey = response.data.data;
+              this.publicKey = response.data;
             }
           })
           .catch((exception) => {
@@ -226,7 +224,7 @@
         })
       },
       handleLogin() {
-//        this.loginForm.loginPwd = this.encrypt(this.publicKey,this.loginForm.password)
+        this.loginForm.loginPwd = this.encrypt(this.publicKey,this.loginForm.password)
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true
@@ -268,9 +266,10 @@
         }
       },
       encrypt(publicKey,password){
-        let en = new jsencrypt();
-        en.setPublicKey(publicKey);
-        return en.encrypt(password)
+        const jse = new this.$jsEncrypt()
+        jse.setPublicKey(publicKey)
+        var encrypt = jse.encrypt(password)//加密密码
+        return encrypt
       },
     }
   }

@@ -304,10 +304,16 @@ export const constantRoutes = [
     },
     children: [
       {
+        path: 'studentSetting',
+        component: () => import('@/views/education/studentSetting'),
+        name: '学生选课',
+        meta: { title: '学生选课', icon: 'documentation' }
+      },
+      {
         path: 'Article',
         component: () => import('@/views/education/article'),
-        name: 'Article',
-        meta: { title: 'Article', icon: 'documentation' }
+        name: '同步课文',
+        meta: { title: '同步课文', icon: 'documentation' }
       }
     ]
   },

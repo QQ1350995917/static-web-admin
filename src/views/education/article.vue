@@ -13,7 +13,6 @@
     </el-aside>
     <el-main>
       <Player
-
         theme="dark"
         style="--vm-player-theme: #e86c8b;"
       >

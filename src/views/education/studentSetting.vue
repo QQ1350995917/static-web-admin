@@ -161,7 +161,13 @@
         this.requestForArticles(item)
       },
       onArticlesSelectChange(item){
-        this.articleTextJson = JSON.stringify(item.text, null, 2);
+        this.articleTextJson = ''
+        var texts = JSON.parse(item.text)
+        for (var i=0; i<texts.length; i++) {
+          var time = texts[i].time;
+          var text = texts[i].text;
+          this.articleTextJson = this.articleTextJson + "[" + time + "]   " + text + "\r\n";
+        }
       },
       requestForTerms(){
         requestTermsApi().then((res) => {

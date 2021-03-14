@@ -52,6 +52,12 @@
     </el-header>
     <el-main>
       <el-row>
+        <el-input
+          type="textarea"
+          :rows="20"
+          placeholder="请输入内容"
+          v-model="articleTextJson">
+        </el-input>
       </el-row>
       <el-row>
         <div v-for="item in audios" :key="item.url">
@@ -95,24 +101,13 @@
         course: '',
         textbook: '',
         article: '',
+        articleTextJson: '',
         audios: [
           {
 //            url: '/audio/test.audo.mp3',
             url: 'http://www.0dutv.com/plug/down/up2.php/210349332.mp3',
             controlList: 'onlyOnePlaying'
-          },
-          {
-            url: 'https://www.0dutv.com/upload/dance/20200316/C719452E3C7834080007662021EA968E.mp3',
-            controlList: 'noDownload noMuted onlyOnePlaying'
-          },
-//          {
-//            url: 'http://devtest.qiniudn.com/あっちゅ～ま青春!.mp3',
-//            controlList: 'noDownload noVolume noMuted onlyOnePlaying'
-//          },
-//          {
-//            url: 'http://devtest.qiniudn.com/Preparation.mp3',
-//            controlList: 'noDownload noSpeed onlyOnePlaying'
-//          }
+          }
         ]
       }
     },
@@ -166,8 +161,7 @@
         this.requestForArticles(item)
       },
       onArticlesSelectChange(item){
-        console.log(this.article)
-
+        this.articleTextJson = JSON.stringify(item.text, null, 2);
       },
       requestForTerms(){
         requestTermsApi().then((res) => {

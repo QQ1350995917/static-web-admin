@@ -5,9 +5,9 @@
     <audio ref="audio"
            @pause="onPause"
            @play="onPlay"
-           @timeupdate="onTimeupdate"
-           @loadedmetadata="onLoadedmetadata"
-           src="" controls="controls" hidden></audio>
+           @timeupdate="onTimeUpdate"
+           @loadedmetadata="onLoadedMetadata"
+           :src="theUrl" controls="controls" hidden></audio>
     <el-col :span="2">
       <el-button type="text" @click="startPlayOrPause">{{audio.playing | transPlayPause}}</el-button>
     </el-col>
@@ -21,7 +21,7 @@
     <el-col :span="2">
       <el-tag type="info">{{ audio.maxTime | formatSecond}}</el-tag>
     </el-col>
-    <!--<el-col :span="0"><a :href="url" v-show="!controlList.noDownload" target="_blank" class="download" download>下载</a></el-col>-->
+    <!--<el-col :span="0"><a :href="theUrl" v-show="!controlList.noDownload" target="_blank" class="download" download>下载</a></el-col>-->
   </el-row>
 </template>
 <script>
@@ -55,21 +55,27 @@
           maxTime: 0
         },
         sliderTime: [],
-        controlList: {
-          // 不显示下载
-          noDownload: false,
-          // 不显示静音
-          noMuted: false,
-          // 不显示音量条
-          noVolume: false,
-          // 不显示进度条
-          noProcess: false,
-          // 只能播放一个
-          onlyOnePlaying: false,
-          // 不要快进按钮
-          noSpeed: false
-        }
+
+        url:'',
       }
+    },
+    props: {
+      theUrl: {},
+      theControlList: {},
+      controlList: {
+        // 不显示下载
+        noDownload: false,
+        // 不显示静音
+        noMuted: false,
+        // 不显示音量条
+        noVolume: false,
+        // 不显示进度条
+        noProcess: false,
+        // 只能播放一个
+        onlyOnePlaying: false,
+        // 不要快进按钮
+        noSpeed: false
+      },
     },
     methods: {
       // 控制音频的播放与暂停
@@ -87,13 +93,29 @@
       // 当音频播放
       onPlay () {
         this.audio.playing = true
+
+//        this.audio.loading = false
+//
+//        if(!this.controlList.onlyOnePlaying){
+//          return
+//        }
+//
+//        let target = res.target
+//
+//        let audios = document.getElementsByTagName('audio');
+//        // 如果设置了排他性，当前音频播放是，其他音频都要暂停
+//        [...audios].forEach((item) => {
+//          if(item !== target){
+//            item.pause()
+//          }
+//        })
       },
       // 当音频暂停
       onPause () {
         this.audio.playing = false
       },
       // 当timeupdate事件大概每秒一次，用来更新音频流的当前播放时间
-      onTimeupdate(res) {
+      onTimeUpdate(res) {
         console.log('timeupdate')
         console.log(res)
         this.audio.currentTime = res.target.currentTime
@@ -101,7 +123,7 @@
       },
       // 当加载语音流元数据完成后，会触发该事件的回调函数
       // 语音元数据主要是语音的长度之类的数据
-      onLoadedmetadata(res) {
+      onLoadedMetadata(res) {
         console.log('loadedmetadata')
         console.log(res)
         this.audio.maxTime = parseInt(res.target.duration)

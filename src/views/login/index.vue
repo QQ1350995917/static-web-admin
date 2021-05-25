@@ -133,7 +133,8 @@
         loginForm: {
           username: 'admin',
           password: 'admin',
-          loginPwd: 'VwNculZAt3heV9heu30Qe0GyLcqau907KGmYPpOS3WBdZZ9hZ0uKMSRa64GZz3eEUqVQazztAFqdeOFrbrAlOxhFJ/vCfNMKT6h7fwxhnkVjyghT1i2G2cAukk00oYQS5cvQRbWzdWnoF50yTUd7rCssnri6Qevd27Bmeiaz46A=',
+          //loginPwd: 'VwNculZAt3heV9heu30Qe0GyLcqau907KGmYPpOS3WBdZZ9hZ0uKMSRa64GZz3eEUqVQazztAFqdeOFrbrAlOxhFJ/vCfNMKT6h7fwxhnkVjyghT1i2G2cAukk00oYQS5cvQRbWzdWnoF50yTUd7rCssnri6Qevd27Bmeiaz46A=',
+          loginPwd: '',
           captchaExpect: ''
         },
         loginRules: {
@@ -267,8 +268,11 @@
       },
       encrypt(publicKey,password){
         const jse = new this.$jsEncrypt()
+        console.log(password)
+        console.log(publicKey)
         jse.setPublicKey(publicKey)
         var encrypt = jse.encrypt(password)//加密密码
+        console.log(encrypt)
         return encrypt
       },
     }

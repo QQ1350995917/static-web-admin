@@ -84,7 +84,7 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('account/adminCreate', this.adminForm)
+            this.$store.dispatch('account/create', this.adminForm)
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/account/admin/list'})

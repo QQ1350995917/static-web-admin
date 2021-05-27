@@ -1,129 +1,132 @@
 <template>
-  <div class="app-container">
-    <el-table id="listTable" v-loading="loading" :data="list" row-key="id" border fit highlight-current-row
-              style="width: 100%">
-      <el-table-column align="center" label="ID" width="60px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
+  <el-container>
+    <el-aside width="300px">
+      <el-input
+        placeholder="输入关键字进行过滤"
+        v-model="filterText">
+      </el-input>
+      <el-tree
+        :data="data"
+        :props="defaultProps"
+        node-key="id"
+        @node-click="handleNodeClick"
+        default-expand-all
+        @node-drag-start="handleDragStart"
+        @node-drag-enter="handleDragEnter"
+        @node-drag-leave="handleDragLeave"
+        @node-drag-over="handleDragOver"
+        @node-drag-end="handleDragEnd"
+        @node-drop="handleDrop"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag"
+      >
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          <span>{{ node.label }}</span>
+          <span>
+            <i class="el-icon-menu"></i>
+          </span>
+        </span>
+      </el-tree>
+    </el-aside>
+    <el-main>Main</el-main>
+  </el-container>
 
-      <el-table-column label="Name" min-width="90px" width="180px" max-width="270px">
-        <template slot-scope="scope">
-          <router-link :to="'/organization/detail/'+scope.row.id" class="link-type">
-            <span>{{ scope.row.name }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Members" min-width="90px" width="90px" max-width="90px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.members }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Description" min-width="200px" width="300px" max-width="400px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="Slogan" min-width="200px" width="300px" max-width="400px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.slogan }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Date" min-width="180px" width="180px" max-width="180px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="editOrg(scope.row.id)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-if="scope.row.status=='0'" size="mini" type="danger"
-                     @click="disableOrg(scope.row.id)">
-            {{ $t('table.disabled') }}
-          </el-button>
-          <el-button v-if="scope.row.status=='1'" size="mini" type="danger"
-                     @click="enableOrg(scope.row.id)">
-            {{ $t('table.enabled') }}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
 </template>
 <script>
-  import {fetchRoot, createRoot, fetchList} from '@/api/organization'
-
+  import ElMain from "../../../node_modules/element-ui/packages/main/src/main";
   export default {
-    name: 'Organization',
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'info',
-          deleted: 'danger'
-        }
-        return statusMap[status]
+    components: {ElMain},
+    watch: {
+      filterText(val) {
+        this.$refs.tree.filter(val);
       }
     },
     data() {
       return {
-        list: null,
-        total: null,
-        loading: true,
-        listQuery: {
-          page: 1,
-          limit: 10,
-          status: 0
-        },
-        sortable: null,
-        oldList: [],
-        newList: [],
-      }
-    },
-    created() {
-      this.requestRoot()
+        data: [{
+          label: '一级 1',
+          children: [{
+            label: '二级 1-1',
+            children: [{
+              label: '三级 1-1-1'
+            }]
+          }]
+        }, {
+          label: '一级 2',
+          children: [{
+            label: '二级 2-1',
+            children: [{
+              label: '三级 2-1-1'
+            }]
+          }, {
+            label: '二级 2-2',
+            children: [{
+              label: '三级 2-2-1'
+            }]
+          }]
+        }, {
+          label: '一级 3',
+          children: [{
+            label: '二级 3-1',
+            children: [{
+              label: '三级 3-1-1'
+            }]
+          }, {
+            label: '二级 3-2',
+            children: [{
+              label: '三级 3-2-1'
+            }]
+          }]
+        }],
+        defaultProps: {
+          children: 'children',
+          label: 'label'
+        }
+      };
     },
     methods: {
-      async requestRoot() {
-        this.loading = true
-        const data = await fetchRoot()
-        this.loading = false;
-
-        if (data.meta.code == 404) {
-          this.$router.push({path: this.redirect || '/organization/create'})
+      handleNodeClick(data) {
+        console.log(data);
+      },
+      handleDragStart(node, ev) {
+        console.log('drag start', node);
+      },
+      handleDragEnter(draggingNode, dropNode, ev) {
+        console.log('tree drag enter: ', dropNode.label);
+      },
+      handleDragLeave(draggingNode, dropNode, ev) {
+        console.log('tree drag leave: ', dropNode.label);
+      },
+      handleDragOver(draggingNode, dropNode, ev) {
+        console.log('tree drag over: ', dropNode.label);
+      },
+      handleDragEnd(draggingNode, dropNode, dropType, ev) {
+        console.log('tree drag end: ', dropNode && dropNode.label, dropType);
+      },
+      handleDrop(draggingNode, dropNode, dropType, ev) {
+        console.log('tree drop: ', dropNode.label, dropType);
+      },
+      allowDrop(draggingNode, dropNode, type) {
+        if (dropNode.data.label === '二级 3-1') {
+          return type !== 'inner';
         } else {
-          this.requestList();
+          return true;
         }
       },
-      async requestList() {
-        this.loading = true
-        const data = await fetchList(this.listQuery)
-        this.list = data.data.org
-        this.total = 100
-        this.loading = false
-        this.oldList = this.list.map(v => v.id)
-        this.newList = this.oldList.slice()
-      },
-      editOrg(id){
-        this.$router.push({path: this.redirect || '/organization/create/' + id})
-      },
-      enableOrg(id){
-
-      },
-      disableOrg(id){
-
+      allowDrag(draggingNode) {
+        return draggingNode.data.label.indexOf('三级 3-2-2') === -1;
       }
     }
-  }
+  };
 </script>
-
-<style scoped>
-
+<style>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
 </style>

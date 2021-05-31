@@ -1,26 +1,25 @@
 import request from '@/utils/request'
 
-export function fetchRoot(data) {
+export function fetchNodeList(page,scopes,sorts) {
   return request({
-    url: '/service/organization/api/organization',
-    method: 'get',
-    params: data
+    url: '/service/organization/api/organization?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),
+    method: 'get'
   })
 }
 
-export function createRoot(data) {
-  console.log("data:" + JSON.stringify(data))
+export function createNode(data) {
   return request({
-    url: '/service/organization/api/admin/org/root',
+    url: '/service/organization/api/organization',
     method: 'post',
     data
   })
 }
 
-export function fetchList(data) {
+export function deleteNode(id) {
+  console.log(id)
   return request({
-    url: '/service/organization/api/admin/org',
-    method: 'get',
-    params: data
+    url: '/service/organization/api/organization/' + id + '',
+    method: 'delete'
   })
 }
+

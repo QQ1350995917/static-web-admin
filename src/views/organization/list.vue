@@ -23,7 +23,7 @@
           <el-button
             type="text"
             size="mini"
-            @click="() => onCreateSubNodeClick(node, data)">
+            @click="() => onCreateNodeClick(node, data)">
             新增
           </el-button>
           <el-button
@@ -38,29 +38,34 @@
     </el-aside>
     <el-main>Main</el-main>
     <el-dialog
-      title="新建"
-      :visible.sync="createSubNodeDialogVisible"
+      title="新建子级部门"
+      :visible.sync="createNodeDialogVisible"
       width="30%"
-      :before-close="onCreateSubNodeDialogCloseClick">
-      <span>{{parentNodeTitle}}</span>
+      :before-close="onCreateNodeDialogCloseClick">
       <div>
-        <el-input placeholder="请输入内容" v-model="subjectNodeTitle">
-          <template slot="prepend">部门名称：</template>
+        <el-input placeholder="上级部门名称" v-model="parentNodeObject.name" v-bind:readonly="true">
+          <template slot="prepend">上级部门名称：</template>
+        </el-input>
+      </div>
+      <br>
+      <div>
+        <el-input placeholder="请输入子级部门名称" v-model="currentNodeObject.name">
+          <template slot="prepend">子级部门名称：</template>
         </el-input>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="onCreateSubNodeDialogCloseClick">取 消</el-button>
-        <el-button type="primary" @click="onCreateSubNodeDialogConfirmClick">确 定</el-button>
+        <el-button @click="onCreateNodeDialogCloseClick">取 消</el-button>
+        <el-button type="primary" @click="onCreateNodeDialogConfirmClick">确 定</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="编辑"
+      title="编辑部门名称"
       :visible.sync="editNodeDialogVisible"
       width="30%"
       :before-close="onEditNodeDialogCloseClick">
       <div>
-        <el-input placeholder="请输入内容" v-model="subjectNodeTitle">
+        <el-input placeholder="部门新名称" v-model="currentNodeObject.name">
           <template slot="prepend">部门名称：</template>
         </el-input>
       </div>
@@ -71,11 +76,15 @@
     </el-dialog>
 
     <el-dialog
-      title="删除"
-      :visible.sync="deleteSubNodeDialogVisible"
+      title="删除部门"
+      :visible.sync="deleteNodeDialogVisible"
       width="30%"
-      :before-close="onCreateSubNodeDialogCloseClick">
-      <span>{{parentNodeTitle}}</span>
+      :before-close="onCreateNodeDialogCloseClick">
+      <div>
+        <el-input placeholder="部门新名称" v-model="currentNodeObject.name" v-bind:readonly="true">
+          <template slot="prepend">部门名称：</template>
+        </el-input>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onDeleteNodeDialogCloseClick">取 消</el-button>
         <el-button type="primary" @click="onDeleteNodeDialogConfirmClick">确 定</el-button>
@@ -85,7 +94,7 @@
 </template>
 <script>
   import ElMain from "../../../node_modules/element-ui/packages/main/src/main";
-  import { fetchNodeList,createNode,deleteNode } from '@/api/organization'
+  import { fetchNodeList,createNode,editNode,deleteNode } from '@/api/organization'
   export default {
     components: {ElMain},
 
@@ -100,21 +109,29 @@
         page: {"index":0,"size":120},
         scopes: [{hit:"EM",fieldName:"pid",fieldValue:"0"},{hit:"EM",fieldName:"del",fieldValue:"0"}],
         sorts: [{fieldName:"sort",sort:"asc"}],
-        createSubNodeDialogVisible: false,
-        parentNodeTitle: '',
-        subjectNodeTitle: '',
-        nodeObject:{
-          description: "string",
-          logo: "string",
+        parentNodeObject: {
+          id: '',
+          description: "",
+          logo: "",
           members: 1,
-          name: "string",
+          name: "",
           pid: 0,
-          slogan: "string",
+          slogan: "",
           sort: 0
         },
+        currentNodeObject: {
+          id: '',
+          description: "",
+          logo: "",
+          members: 1,
+          name: "",
+          pid: 0,
+          slogan: "",
+          sort: 0
+        },
+        createNodeDialogVisible: false,
         editNodeDialogVisible: false,
-        deleteSubNodeDialogVisible: false,
-        currentDeleteNodeId: ''
+        deleteNodeDialogVisible: false
       };
     },
     methods: {
@@ -129,47 +146,47 @@
           return resolve(data.data.elements);
         }
       },
-      onCreateSubNodeClick(node, data){
-        this.createSubNodeDialogVisible=true;
-        this.parentNodeTitle = data.name;
-        this.nodeObject.pid = data.id;
+      onCreateNodeClick(node, data){
+        this.createNodeDialogVisible=true;
+        this.parentNodeObject.name = data.name;
+        this.currentNodeObject.pid = data.id;
       },
-      onCreateSubNodeDialogCloseClick() {
-        this.parentNodeTitle = ''
-        this.createSubNodeDialogVisible=false;
+      onCreateNodeDialogCloseClick() {
+        this.parentNodeObject.name = '';
+        this.currentNodeObject.pid = '';
+        this.createNodeDialogVisible=false;
       },
-      onCreateSubNodeDialogConfirmClick() {
-        this.nodeObject.name = this.subjectNodeTitle;
-        this.requestForCreateNewNode(this.nodeObject)
+      onCreateNodeDialogConfirmClick() {
+        createNode(this.currentNodeObject);
+        this.onCreateNodeDialogCloseClick();
       },
-      requestForCreateNewNode(nodeObject) {
-        createNode(nodeObject)
-      },
-      onEditNodeNameClick(){
+      onEditNodeNameClick(node, data){
         this.editNodeDialogVisible = true;
-        this.parentNodeTitle = data.name;
-        this.currentDeleteNodeId = data.id;
+        this.currentNodeObject.id = data.id;
+        this.currentNodeObject.name = data.name;
       },
       onEditNodeDialogCloseClick() {
-        this.subjectNodeTitle = '';
+        this.currentNodeObject.id = '';
+        this.currentNodeObject.name = '';
         this.editNodeDialogVisible = false;
       },
       onEditNodeDialogConfirmClick() {
-
-        this.editNodeDialogVisible = false;
+        editNode(this.currentNodeObject);
+        this.onEditNodeDialogCloseClick();
       },
       onDeleteNodeClick(node, data) {
-        this.deleteSubNodeDialogVisible=true;
-        this.parentNodeTitle = data.name;
-        this.currentDeleteNodeId = data.id;
+        this.deleteNodeDialogVisible=true;
+        this.currentNodeObject.name = data.name;
+        this.currentNodeObject.id = data.id;
       },
       onDeleteNodeDialogCloseClick() {
-        this.currentDeleteNodeId = '';
-        this.deleteSubNodeDialogVisible = false;
+        this.currentNodeObject.name = '';
+        this.currentNodeObject.id = '';
+        this.deleteNodeDialogVisible = false;
       },
       onDeleteNodeDialogConfirmClick() {
-        deleteNode(this.currentDeleteNodeId)
-        this.deleteSubNodeDialogVisible = false;
+        deleteNode(this.currentNodeObject.id);
+        this.onDeleteNodeDialogCloseClick();
       },
       onItemMenuClick(data) {
         console.log(data)

@@ -7,7 +7,8 @@ export function fetchNodeList(page,scopes,sorts) {
   })
 }
 
-export function createNode(data) {
+export function createNode(params) {
+  var data = {'pid':params.pid,'name':params.name};
   return request({
     url: '/service/organization/api/organization',
     method: 'post',
@@ -15,8 +16,17 @@ export function createNode(data) {
   })
 }
 
+export function editNode(params) {
+  var data = {'id':params.id,'name':params.name};
+  console.log(data)
+  return request({
+    url: '/service/organization/api/organization/' + data.id,
+    method: 'patch',
+    data
+  })
+}
+
 export function deleteNode(id) {
-  console.log(id)
   return request({
     url: '/service/organization/api/organization/' + id + '',
     method: 'delete'

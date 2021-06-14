@@ -1,14 +1,15 @@
 <template>
   <el-container>
     <el-aside width="300px">
-      <el-input
-        placeholder="输入关键字进行过滤">
+      <el-input placeholder="输入关键字进行查找">
+        <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
       <el-tree
         :props="props"
         :load="loadNode"
         lazy
         nodeKey="id"
+        @node-click="onOrgNodeClick"
         :expand-on-click-node="false"
       >
         <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -36,7 +37,106 @@
       </span>
       </el-tree>
     </el-aside>
-    <el-main>Main</el-main>
+    <el-main>
+      <el-container>
+        <el-header>
+          <el-row>
+            <el-col :span="3">
+              <el-button plain >下载模板</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-button plain >批量导入</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-button plain @click="onCreateOrgMemberButtonClick" >新增成员</el-button>
+            </el-col>
+            <el-col :span="3">
+              <el-button plain >批量删除</el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-input placeholder="输入关键字进行查找">
+                <el-button slot="append" icon="el-icon-search"></el-button>
+              </el-input>
+            </el-col>
+          </el-row>
+        </el-header>
+        <el-main>
+          <el-table
+            :data="members"
+            stripe
+            height="650"
+            style="width: 100%">
+            <el-table-column
+              type="selection"
+              width="55">
+            </el-table-column>
+            <el-table-column
+              fixed
+              prop="member.name"
+              label="姓名"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="部门"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="role"
+              label="角色"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="member.gender"
+              label="性别"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="member.emp_no"
+              label="工号"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="member.pin"
+              label="身份证号"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="member.able"
+              label="禁/启"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="active"
+              label="激活"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="member.date"
+              label="日期"
+              width="150">
+            </el-table-column>
+            <el-table-column
+              fixed="right"
+              label="操作"
+              width="240">
+              <el-button plain size="mini" icon="el-icon-phone"></el-button>
+              <el-button plain size="mini" icon="el-icon-star-on"></el-button>
+              <el-button plain size="mini" icon="el-icon-edit"></el-button>
+              <el-button plain size="mini" icon="el-icon-delete"></el-button>
+            </el-table-column>
+          </el-table>
+          <div class="block">
+            <el-pagination
+              layout="prev, pager, next"
+              :total="1000">
+            </el-pagination>
+          </div>
+        </el-main>
+      </el-container>
+
+
+    </el-main>
     <el-dialog
       title="新建子级部门"
       :visible.sync="createNodeDialogVisible"
@@ -90,13 +190,62 @@
         <el-button type="primary" @click="onDeleteNodeDialogConfirmClick">确 定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="新增成员"
+      :visible.sync="createOrgMemberDialogVisible"
+      width="30%"
+      :before-close="onCreateOrgMemberDialogCloseClick">
+      <el-form :model="createOrgMemberForm" :rules="createOrgMemberRules" ref="createOrgMemberForm" label-width="120px">
+        <el-form-item label="部门名称" prop="orgName">
+          <el-input v-model="currentOrgObject.name" v-bind:readonly="true"></el-input>
+        </el-form-item>
+        <el-form-item label="账户名" prop="accountName">
+          <el-input v-model="createOrgMemberForm.accountName"></el-input>
+        </el-form-item>
+        <el-form-item label="账户密码" prop="accountPwd">
+          <el-input v-model="createOrgMemberForm.accountPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名" prop="userName">
+          <el-input v-model="createOrgMemberForm.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号" prop="pin">
+          <el-input v-model="createOrgMemberForm.pin"></el-input>
+        </el-form-item>
+        <el-form-item label="工号" prop="empNo">
+          <el-input v-model="createOrgMemberForm.empNo"></el-input>
+        </el-form-item>
+
+        <el-form-item label="性别" prop="gender">
+          <el-radio-group v-model="createOrgMemberForm.gender">
+            <el-radio label="0"></el-radio>
+            <el-radio label="1"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="简介" prop="summary">
+          <el-input type="textarea" v-model="createOrgMemberForm.summary"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCreateOrgMemberDialogCloseClick">取 消</el-button>
+        <el-button type="primary" @click="onCreateOrgMemberDialogConfirmClick('createOrgMemberForm')">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </el-container>
 </template>
 <script>
   import ElMain from "../../../node_modules/element-ui/packages/main/src/main";
-  import { fetchNodeList,createNode,editNode,deleteNode } from '@/api/organization'
+//  import AddOrgMember from "addOrgMember.vue";
+
+  import { fetchOrgList,createOrg,editOrg,deleteOrg } from '@/api/organization/organization'
+  import { fetchOrgMemberList,bindUserToOrg} from '@/api/organization/organizationMember'
+  import { userCreate} from '@/api/account/user'
   export default {
-    components: {ElMain},
+    components: {
+      ElMain,
+//      AddOrgMember
+    },
 
     data() {
       return {
@@ -106,14 +255,14 @@
           children: 'zones',
           isLeaf: 'leaf'
         },
-        page: {"index":0,"size":120},
-        scopes: [{hit:"EM",fieldName:"pid",fieldValue:"0"},{hit:"EM",fieldName:"del",fieldValue:"0"}],
-        sorts: [{fieldName:"sort",sort:"asc"}],
+        orgPage: {"index":0,"size":120},
+        orgScopes: [{hit:"EM",fieldName:"pid",fieldValue:"0"},{hit:"EM",fieldName:"del",fieldValue:"0"}],
+        orgSorts: [{fieldName:"sort",sort:"asc"}],
         parentNodeObject: {
           id: '',
           description: "",
           logo: "",
-          members: 1,
+          members: 0,
           name: "",
           pid: 0,
           slogan: "",
@@ -123,7 +272,17 @@
           id: '',
           description: "",
           logo: "",
-          members: 1,
+          members: 0,
+          name: "",
+          pid: 0,
+          slogan: "",
+          sort: 0
+        },
+        currentOrgObject: {
+          id: 0,
+          description: "",
+          logo: "",
+          members: 0,
           name: "",
           pid: 0,
           slogan: "",
@@ -131,20 +290,99 @@
         },
         createNodeDialogVisible: false,
         editNodeDialogVisible: false,
-        deleteNodeDialogVisible: false
+        deleteNodeDialogVisible: false,
+        memberPage: {"index":0,"size":12},
+        memberScopes: [{hit:"EM",fieldName:"org_id",fieldValue:''},{hit:"EM",fieldName:"del",fieldValue:"0"}],
+        memberSorts: [{fieldName:"sort",sort:"asc"}],
+        members:  [{
+          date: '2016-05-03',
+          name: '王小虎',
+          gender: '女',
+          empNo: '普陀区',
+          address: '上海市普陀区金沙江路 1518 弄',
+          zip: 200333,
+          pin: '111111111111111111'
+        },{
+          able: 0,
+          createTime: 1623641997000,
+          del: 0,
+          memId: "19",
+          member: {
+            id: "19",
+            name: "777777"
+          },
+          orgId: "1",
+          sort: 0,
+          updateTime: 1623641997000
+        }],
+        createOrgMemberDialogVisible: false,
+        createOrgMemberForm: {
+          accountName: '',
+          accountPwd: '',
+          userName: '',
+          pin: '',
+          empNo: '',
+          level: 1,
+          gender: '',
+          summary: ''
+        },
+        createOrgMemberRules: {
+          accountName: [
+            {required: true, message: '请输入账户名', trigger: 'blur'},
+            {min: 4, max: 24, message: '长度在 4 到 24 个字符', trigger: 'blur'}
+          ],
+          accountPwd: [
+            {required: true, message: '请输入账户密码', trigger: 'blur'},
+            {min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur'}
+          ],
+          userName: [
+            {required: true, message: '请输入用户名', trigger: 'blur'},
+            {min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur'}
+          ],
+          pin: [
+            {required: false, message: '请输入用户证件号', trigger: 'blur'},
+            {min: 0, max: 18, message: '长度在 0 到 18 个字符', trigger: 'blur'}
+          ],
+          empNo: [
+            {required: false, message: '请输入员工号', trigger: 'blur'},
+            {min: 6, max: 8, message: '长度在 6 到 8 个字符', trigger: 'blur'}
+          ],
+          gender: [
+            {required: true, message: '请选择性别', trigger: 'change'}
+          ],
+          summary: [
+            {required: false, message: '请填写简介', trigger: 'blur'}
+          ]
+        }
       };
+    },
+    created() {
+
     },
     methods: {
       async loadNode(node, resolve) {
         if (node.level === 0) {
-          const data = await fetchNodeList(this.page,this.scopes,this.sorts)
+          const data = await fetchOrgList(this.orgPage,this.orgScopes,this.orgSorts)
+          this.currentOrgObject = data.data.elements[0];
+          this.onOrgNodeClick(this.currentOrgObject)
           return resolve(data.data.elements);
         }
         if (node.level > 0) {
-          this.scopes[0].fieldValue=node.key
-          const data = await fetchNodeList(this.page,this.scopes,this.sorts)
+          this.orgScopes[0].fieldValue = node.key
+          const data = await fetchOrgList(this.orgPage,this.orgScopes,this.orgSorts)
           return resolve(data.data.elements);
         }
+      },
+      onOrgNodeClick(node, data){
+        this.currentOrgObject = node;
+        this.memberScopes[0].fieldValue = this.currentOrgObject.id;
+        fetchOrgMemberList(this.memberPage,this.memberScopes,this.memberSorts).then((res) => {
+          if (res.meta.code === 200) {
+            this.members = res.data.elements;
+          } else {
+
+          }
+        });
       },
       onCreateNodeClick(node, data){
         this.createNodeDialogVisible=true;
@@ -157,7 +395,17 @@
         this.createNodeDialogVisible=false;
       },
       onCreateNodeDialogConfirmClick() {
-        createNode(this.currentNodeObject);
+        createOrg(this.currentNodeObject).then((res) => {
+          if (res.meta.code === 200) {
+            this.$message({
+              message: '创建' + this.currentNodeObject.name + '成功',
+              type: 'success'
+            });
+            this.onDeleteNodeDialogCloseClick();
+          } else {
+            this.$message.error('创建' + this.currentNodeObject.name + '失败')
+          }
+        });
         this.onCreateNodeDialogCloseClick();
       },
       onEditNodeNameClick(node, data){
@@ -171,7 +419,17 @@
         this.editNodeDialogVisible = false;
       },
       onEditNodeDialogConfirmClick() {
-        editNode(this.currentNodeObject);
+        editOrg(this.currentNodeObject).then((res) => {
+          if (res.meta.code === 200) {
+            this.$message({
+              message: '编辑' + this.currentNodeObject.name + '成功',
+              type: 'success'
+            });
+            this.onDeleteNodeDialogCloseClick();
+          } else {
+            this.$message.error('编辑' + this.currentNodeObject.name + '失败')
+          }
+        });
         this.onEditNodeDialogCloseClick();
       },
       onDeleteNodeClick(node, data) {
@@ -185,14 +443,51 @@
         this.deleteNodeDialogVisible = false;
       },
       onDeleteNodeDialogConfirmClick() {
-        deleteNode(this.currentNodeObject.id);
-        this.onDeleteNodeDialogCloseClick();
+        deleteOrg(this.currentNodeObject.id).then((res) => {
+          if (res.meta.code === 200) {
+            this.$message({
+              message: '删除' + this.currentNodeObject.name + '成功',
+              type: 'success'
+            });
+            this.onDeleteNodeDialogCloseClick();
+          } else {
+            this.$message.error('删除' + this.currentNodeObject.name + '失败')
+          }
+        });
+      },
+      onCreateOrgMemberButtonClick(){
+        this.createOrgMemberDialogVisible = true;
+      },
+      onCreateOrgMemberDialogCloseClick(){
+        this.createOrgMemberDialogVisible = false;
+      },
+      onCreateOrgMemberDialogConfirmClick(formName){
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            userCreate(this.createOrgMemberForm).then((res) => {
+              if (res.meta.code === 200) {
+                bindUserToOrg(this.currentOrgObject.id,res.data).then((response) => {
+                  if (response.meta.code === 200) {
+                    this.$message({
+                      message: '新建成功',
+                      type: 'success'
+                    });
+                    this.onCreateOrgMemberDialogCloseClick();
+                  } else {
+
+                  }
+                });
+              } else {
+
+              }
+            });
+          } else {
+            return false;
+          }
+        });
       },
       onItemMenuClick(data) {
         console.log(data)
-      },
-      handleNodeClick(data) {
-        console.log(data);
       },
       handleDragStart(node, ev) {
         console.log('drag start', node);
@@ -237,5 +532,9 @@
   }
   .el-tree-node {
     margin: 5px;
+  }
+  .el-aside {
+    padding-left:10px;
+    padding-top:20px;
   }
 </style>

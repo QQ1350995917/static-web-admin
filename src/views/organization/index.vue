@@ -1,5 +1,5 @@
 <script>
-  import { fetchRoot } from '@/api/organization'
+  import { fetchRoot } from '@/api/organization/organization'
   export default {
     name: 'index',
     data() {

@@ -1,13 +1,13 @@
 import request from '@/utils/request'
 
-export function fetchNodeList(page,scopes,sorts) {
+export function fetchOrgList(page,scopes,sorts) {
   return request({
     url: '/service/organization/api/organization?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),
     method: 'get'
   })
 }
 
-export function createNode(params) {
+export function createOrg(params) {
   var data = {'pid':params.pid,'name':params.name};
   return request({
     url: '/service/organization/api/organization',
@@ -16,7 +16,7 @@ export function createNode(params) {
   })
 }
 
-export function editNode(params) {
+export function editOrg(params) {
   var data = {'id':params.id,'name':params.name};
   console.log(data)
   return request({
@@ -26,7 +26,7 @@ export function editNode(params) {
   })
 }
 
-export function deleteNode(id) {
+export function deleteOrg(id) {
   return request({
     url: '/service/organization/api/organization/' + id + '',
     method: 'delete'

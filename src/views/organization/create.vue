@@ -28,7 +28,7 @@
   </div>
 </template>
 <script>
-  import {createRoot} from '@/api/organization'
+  import {createOrg} from '@/api/organization/organization'
 
   const orgEntity = {
     name: '',

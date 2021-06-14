@@ -1,10 +1,25 @@
 import request from '@/utils/request'
 
 export function userCreate(params) {
+  var data = {
+    user:{
+      empNo: params.empNo,
+      gender: params.gender,
+      level: params.level,
+      name: params.userName,
+      pin: params.pin,
+      summary: params.summary
+    },
+    account:{
+      loginName: params.accountName,
+      loginPwd: params.accountPwd
+    }
+  }
+
   return request({
     url: '/service/account/api/admin/user',
     method: 'post',
-    data: params
+    data: data
   })
 }
 export function userUserList(page, scopes, sorts) {

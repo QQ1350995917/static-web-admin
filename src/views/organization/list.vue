@@ -77,7 +77,7 @@
               width="120">
             </el-table-column>
             <el-table-column
-              prop="name"
+              prop="orgName"
               label="部门"
               width="120">
             </el-table-column>
@@ -92,7 +92,7 @@
               width="80">
             </el-table-column>
             <el-table-column
-              prop="member.emp_no"
+              prop="member.empNo"
               label="工号"
               width="80">
             </el-table-column>
@@ -308,10 +308,19 @@
           del: 0,
           memId: "19",
           member: {
-            id: "19",
-            name: "777777"
+            id: "",
+            name: "",
+            pin: "",
+            gender: "",
+            empNo: "",
+            summary: "",
+            able: "",
+            del: "",
+            createTime: "",
+            updateTime: ""
           },
           orgId: "1",
+          orgName: "",
           sort: 0,
           updateTime: 1623641997000
         }],

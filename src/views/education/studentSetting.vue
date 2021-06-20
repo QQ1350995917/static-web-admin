@@ -162,6 +162,9 @@
       },
       onArticlesSelectChange(item){
         this.articleTextJson = ''
+        // FIXME: the url is fake
+        this.audios[0].url = "http://localhost:12050/api/file/" + item.mediaPath;
+//        this.audios[0].url = "http://www.0dutv.com/plug/down/up2.php/210349332.mp3";
         var texts = JSON.parse(item.text)
         for (var i=0; i<texts.length; i++) {
           var time = texts[i].time;

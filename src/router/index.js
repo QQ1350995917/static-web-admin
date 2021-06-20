@@ -84,6 +84,45 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/organization',
+    component: Layout,
+    redirect: 'index',
+    name: 'Organization',
+    meta: {
+      title: 'Organization',
+      icon: 'peoples'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/organization/list'),
+        name: 'OrgList',
+        meta: { title: 'OrgList', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/organization/create'),
+        name: 'CreateOrg',
+        meta: { title: 'CreateOrg', icon: 'edit' },
+        hidden: true
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/organization/edit'),
+        name: 'EditOrg',
+        meta: { title: 'EditOrg', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import('@/views/organization/detail'),
+        name: 'OrgDetail',
+        meta: { title: 'OrgDetail', noCache: true },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/account',
     component: Layout,
     redirect: '/account/list',
@@ -252,45 +291,6 @@ export const constantRoutes = [
         name: 'Typeface-Painting',
         meta: { title: 'Painting', icon: 'documentation' }
       },
-    ]
-  },
-  {
-    path: '/organization',
-    component: Layout,
-    redirect: 'index',
-    name: 'Organization',
-    meta: {
-      title: 'Organization',
-      icon: 'peoples'
-    },
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/organization/list'),
-        name: 'OrgList',
-        meta: { title: 'OrgList', icon: 'list' }
-      },
-      {
-        path: 'create',
-        component: () => import('@/views/organization/create'),
-        name: 'CreateOrg',
-        meta: { title: 'CreateOrg', icon: 'edit' },
-        hidden: true
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/organization/edit'),
-        name: 'EditOrg',
-        meta: { title: 'EditOrg', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'detail/:id(\\d+)',
-        component: () => import('@/views/organization/detail'),
-        name: 'OrgDetail',
-        meta: { title: 'OrgDetail', noCache: true },
-        hidden: true
-      }
     ]
   },
   {

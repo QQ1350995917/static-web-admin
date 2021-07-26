@@ -83,7 +83,7 @@ const actions = {
           removeAnonymousToken();
           resolve(response)
         } else {
-          reject(response.meta)
+          reject(response)
         }
       }).catch(error => {
         reject(error)

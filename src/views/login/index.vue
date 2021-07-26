@@ -233,15 +233,22 @@
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.$router.push({path: this.redirect || '/'})
-                } else if (response.meta.code == 417) {
-                  this.loginForm.captchaExpect = ''
-                  this.captchaRequired = response.data.session.captchaRequired
-                  this.refreshCaptcha()
                 }
                 this.loading = false
               }).catch((error) => {
-              this.$message.error(error.message);
-              this.loading = false
+                if (error.meta.code == 400) {
+                  if (error.data.captchaRequired) {
+                    this.captchaRequired = error.data.captchaRequired
+                    this.refreshCaptcha()
+                  }
+                } else if (error.meta.code == 407) {
+                  this.refreshCaptcha()
+                } else if (error.meta.code == 417) {
+                  this.loginForm.captchaExpect = ''
+                  this.refreshCaptcha()
+                }
+                this.$message.error(error.meta.message);
+                this.loading = false
             })
           } else {
             return false
@@ -268,11 +275,8 @@
       },
       encrypt(publicKey,password){
         const jse = new this.$jsEncrypt()
-        console.log(password)
-        console.log(publicKey)
         jse.setPublicKey(publicKey)
         var encrypt = jse.encrypt(password)//加密密码
-        console.log(encrypt)
         return encrypt
       },
     }

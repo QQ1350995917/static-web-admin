@@ -50,9 +50,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column fixed="right" align="center" width="220" label="function">
+      <el-table-column fixed="right" align="center" width="320" label="function">
         <template slot-scope="scope">
-          <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-setting" round></el-button>
+          <el-popconfirm
+            v-if="scope.row.able == 1"
+            title="确定重置吗？"
+            iconColor="yellow"
+            confirmButtonText='确定'
+            confirmButtonType="warning"
+            cancelButtonText='取消'
+            icon="el-icon-warning"
+            @onConfirm="resetPwd(scope.row)"
+          >
+            <el-button slot="reference" type="warning" round>重置密码</el-button>
+          </el-popconfirm>
+          <el-button @click="handleUserDetail(scope.row)" type="info" icon="el-icon-edit" round></el-button>
           <el-popconfirm
             v-if="scope.row.able == 1"
             title="确定禁用吗？"
@@ -147,9 +159,9 @@
         this.$store.dispatch('account/list', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
-              this.query.page.index = response.data.index;
-              this.query.page.size = response.data.size;
-              this.total = response.data.total;
+              this.query.page.index = parseInt(response.data.index);
+              this.query.page.size = parseInt(response.data.size);
+              this.total = parseInt(response.data.total);
               this.list = response.data.elements;
             }
           }).catch(() => {
@@ -165,8 +177,20 @@
         this.query.page.index = index;
         this.requestAdminUserList()
       },
+      resetPwd(row) {
+        this.$store.dispatch('account/reset', this.query)
+          .then((response) => {
+            if (response.meta.code == 200) {
+              this.query.page.index = parseInt(response.data.index);
+              this.query.page.size = parseInt(response.data.size);
+              this.total = parseInt(response.data.total);
+              this.list = response.data.elements;
+            }
+          }).catch(() => {
+        })
+      },
       handleUserDetail(row){
-        this.$router.push({path: this.redirect || '/account/admin/detail/' + row.id})
+        this.$router.push({path: this.redirect || '/account/detail/' + row.id})
       },
       handleUserAble(row){
         if (row.able == 0) {
@@ -178,7 +202,7 @@
         }
       },
       handleUserEnable(row){
-        this.$store.dispatch('account/adminUserEnable', [row.id])
+        this.$store.dispatch('account/enable', [row.id])
           .then(() => {
             row.able = 1;
             this.$message({
@@ -190,7 +214,7 @@
         })
       },
       handleUserDisable(row){
-        this.$store.dispatch('account/adminUserDisable', [row.id])
+        this.$store.dispatch('account/disable', [row.id])
           .then(() => {
             row.able = 0;
             this.$message({
@@ -202,7 +226,7 @@
         })
       },
       handleUserDelete(row){
-        this.$store.dispatch('account/adminUserDelete', [row.id])
+        this.$store.dispatch('account/del', [row.id])
           .then(() => {
             this.$message({
               message: '删除成功',

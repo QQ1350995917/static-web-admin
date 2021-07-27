@@ -26,7 +26,7 @@ const actions = {
         },
         account: {
           loginName: accountName,
-          loginPwd: accountPwd
+          // loginPwd: accountPwd
         }
       }).then(response => {
         const data = response

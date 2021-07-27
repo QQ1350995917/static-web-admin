@@ -5,9 +5,9 @@
         <el-form-item label="accountName" prop="accountName">
           <el-input v-model="adminForm.accountName"></el-input>
         </el-form-item>
-        <el-form-item label="accountPwd" prop="accountPwd">
-          <el-input v-model="adminForm.accountPwd"></el-input>
-        </el-form-item>
+        <!--<el-form-item label="accountPwd" prop="accountPwd">-->
+          <!--<el-input v-model="adminForm.accountPwd"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item label="userName" prop="userName">
           <el-input v-model="adminForm.userName"></el-input>
         </el-form-item>
@@ -42,7 +42,7 @@
       return {
         adminForm: {
           accountName: '',
-          accountPwd: '',
+//          accountPwd: '',
           userName: '',
           pin: '',
           empNo: '',
@@ -55,10 +55,10 @@
             {required: true, message: '请输入账户名称', trigger: 'blur'},
             {min: 4, max: 24, message: '长度在 4 到 24 个字符', trigger: 'blur'}
           ],
-          accountPwd: [
-            {required: true, message: '请输入账户密码', trigger: 'blur'},
-            {min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur'}
-          ],
+//          accountPwd: [
+//            {required: true, message: '请输入账户密码', trigger: 'blur'},
+//            {min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur'}
+//          ],
           userName: [
             {required: true, message: '请输入用户名称', trigger: 'blur'},
             {min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur'}

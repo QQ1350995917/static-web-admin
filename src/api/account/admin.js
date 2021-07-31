@@ -46,7 +46,7 @@ export function del(uids) {
   })
 }
 
-export function accountList(uid,page, scopes, sorts) {
+export function accountList(uid, page, scopes, sorts) {
   return request({
     url: '/service/account/api/admin/account/' + uid + '?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),
     method: 'get'

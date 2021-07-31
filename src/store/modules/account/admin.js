@@ -14,7 +14,7 @@ import {
 const actions = {
   create(commit, state){
     return new Promise((resolve, reject) => {
-      const {accountName, accountPwd, userName, pin, empNo, level, gender, summary} = state
+      const {accountName, userName, cellphone, email, pin, empNo, level, gender, summary} = state
       create({
         user: {
           name: userName,
@@ -27,7 +27,17 @@ const actions = {
         account: {
           loginName: accountName,
           // loginPwd: accountPwd
-        }
+        },
+        contacts: [
+          {
+            type: 1,
+            value: cellphone
+          },
+          {
+            type: 2,
+            value: email
+          }
+        ]
       }).then(response => {
         const data = response
         resolve(data)
@@ -89,7 +99,7 @@ const actions = {
   },
   accountList(commit, query){
     return new Promise((resolve, reject) => {
-      accountList(query.uid,query.page, query.scopes, query.sorts).then(response => {
+      accountList(query.uid, query.page, query.scopes, query.sorts).then(response => {
         const data = response
         resolve(data)
       }).catch(error => {

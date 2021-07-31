@@ -139,12 +139,6 @@ export const constantRoutes = [
         meta: { title: 'AdminList', icon: 'list' }
       },
       {
-        path: 'admin/create',
-        component: () => import('@/views/account/AdminCreate'),
-        name: 'AdminCreate',
-        meta: { title: 'AdminCreate', icon: 'edit' }
-      },
-      {
         path: 'admin/detail/:id(\\d+)',
         component: () => import('@/views/account/AdminDetail'),
         name: 'AdminDetail',

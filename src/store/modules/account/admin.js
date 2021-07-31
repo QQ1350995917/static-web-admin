@@ -14,10 +14,10 @@ import {
 const actions = {
   create(commit, state){
     return new Promise((resolve, reject) => {
-      const {accountName, userName, cellphone, email, pin, empNo, level, gender, summary} = state
+      const {loginName, name, cellphone, email, pin, empNo, level, gender, summary} = state
       create({
         user: {
-          name: userName,
+          name: name,
           pin: pin,
           empNo: empNo,
           level: level,
@@ -25,7 +25,7 @@ const actions = {
           summary: summary
         },
         account: {
-          loginName: accountName,
+          loginName: loginName,
           // loginPwd: accountPwd
         },
         contacts: [

@@ -41,7 +41,7 @@
     data() {
       return {
         adminForm: {
-          accountName: '',
+          loginName: '',
 //          accountPwd: '',
           userName: '',
           pin: '',

@@ -7,14 +7,26 @@
         </el-input>
       </el-row>
       <el-row style="padding-top: 5px">
-        <el-col :span="20"><el-checkbox v-model="selectAll">全选</el-checkbox></el-col>
-        <el-col :span="2" style="text-align: right"><el-button>批量删除</el-button></el-col>
-        <el-col :span="2" style="text-align: right"><el-button @click="onCreateMemberButtonClick" >新增</el-button></el-col>
+        <el-col :span="16">
+          <el-checkbox v-model="selectAll">全选</el-checkbox>
+        </el-col>
+        <el-col :span="2" style="text-align: right">
+          <el-button>批量重置</el-button>
+        </el-col>
+        <el-col :span="2" style="text-align: right">
+          <el-button>批量锁定</el-button>
+        </el-col>
+        <el-col :span="2" style="text-align: right">
+          <el-button>批量删除</el-button>
+        </el-col>
+        <el-col :span="2" style="text-align: right">
+          <el-button @click="onCreateMemberButtonClick">新增</el-button>
+        </el-col>
       </el-row>
     </el-header>
 
     <el-main>
-      <el-table ref="dragTable" :data="list" row-key="id" style="width: 100%" stripe>
+      <el-table ref="dragTable" :data="members" row-key="id" style="width: 100%" stripe>
         <el-table-column align="center" label="序号" type="index" width="100">
           <template slot-scope="scope">
             <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
@@ -22,33 +34,33 @@
         </el-table-column>
         <el-table-column label="姓名" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.user.name }}</span>
           </template>
         </el-table-column>
         <el-table-column label="账号" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.accountName }}</span>
+            <span>{{ scope.row.account.loginName }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="工号" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.empNo }}</span>
+            <span>{{ scope.row.user.empNo }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="性别" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.gender }}</span>
+            <span>{{ scope.row.user.gender }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="创建时间" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            <span>{{ scope.row.user.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
         <!--<el-table-column width="160" align="center" label="更新时间" sortable>-->
-          <!--<template slot-scope="scope">-->
-            <!--<span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-          <!--</template>-->
+        <!--<template slot-scope="scope">-->
+        <!--<span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+        <!--</template>-->
         <!--</el-table-column>-->
         <el-table-column fixed="right" align="center" width="320" label="操作">
           <template slot-scope="scope">
@@ -61,11 +73,11 @@
               icon="el-icon-warning"
               @onConfirm="onResetPwdConfirm(scope.row)"
             >
-              <el-button slot="reference" plain size="mini" >重置密码</el-button>
+              <el-button slot="reference" plain size="mini">重置密码</el-button>
             </el-popconfirm>
             <el-button @click="onMemberDetailClick(scope.row)" icon="el-icon-edit" plain size="mini"></el-button>
             <el-popconfirm
-              v-if="scope.row.able == 1"
+              v-if="scope.row.user.able == 1"
               title="确定禁用吗？"
               iconColor="yellow"
               confirmButtonText='确定'
@@ -77,7 +89,7 @@
               <el-button slot="reference" icon="el-icon-lock" plain size="mini"></el-button>
             </el-popconfirm>
             <el-popconfirm
-              v-if="scope.row.able == 0"
+              v-if="scope.row.user.able == 0"
               title="确定启用吗？"
               iconColor="yellow"
               confirmButtonText='确定'
@@ -118,11 +130,11 @@
         :visible.sync="createMemberDialogVisible"
         :before-close="onCreateMemberDialogCloseClick">
         <el-form :model="createMemberForm" :rules="createMemberRules" ref="createMemberForm" label-width="120px">
-          <el-form-item label="姓名" prop="userName">
-            <el-input v-model="createMemberForm.userName" placeholder="姓名可重复"></el-input>
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="createMemberForm.name" placeholder="姓名可重复"></el-input>
           </el-form-item>
-          <el-form-item label="账号" prop="accountName">
-            <el-input v-model="createMemberForm.accountName" placeholder="账号不可重复"></el-input>
+          <el-form-item label="账号" prop="loginName">
+            <el-input v-model="createMemberForm.loginName" placeholder="账号不可重复"></el-input>
           </el-form-item>
           <el-form-item label="手机号码" prop="cellphone">
             <el-input v-model="createMemberForm.cellphone" placeholder="手机号码不可重复"></el-input>
@@ -193,27 +205,39 @@
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
           sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
-        list: [],
+        members: [],
         total: 0,
         selectAll: false,
         createMemberDialogVisible: false,
-        createMemberForm: {
-          accountName: '',
-          userName: '',
-          cellphone: '',
-          email: '',
+        createMemberDialogTitle: '',
+        createMemberFormInit: {
+          name: '',
           pin: '',
           empNo: '',
-          level: 1,
           gender: '',
-          summary: ''
+          summary: '',
+          createTime: '',
+          loginName: '',
+          cellphone: '',
+          email: '',
+        },
+        createMemberForm: {
+          name: '',
+          pin: '',
+          empNo: '',
+          gender: '',
+          summary: '',
+          createTime: '',
+          loginName: '',
+          cellphone: '',
+          email: '',
         },
         createMemberRules: {
-          accountName: [
+          loginName: [
             {required: true, message: '请输入账户名称', trigger: 'blur'},
             {min: 4, max: 24, message: '长度在 4 到 24 个字符', trigger: 'blur'}
           ],
-          userName: [
+          name: [
             {required: true, message: '请输入姓名', trigger: 'blur'},
             {min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur'}
           ],
@@ -275,7 +299,7 @@
               this.query.page.index = parseInt(response.data.index);
               this.query.page.size = parseInt(response.data.size);
               this.total = parseInt(response.data.total);
-              this.list = response.data.elements;
+              this.members = response.data.elements;
             }
           }).catch(() => {
         })
@@ -297,12 +321,21 @@
               this.query.page.index = parseInt(response.data.index);
               this.query.page.size = parseInt(response.data.size);
               this.total = parseInt(response.data.total);
-              this.list = response.data.elements;
+              this.members = response.data.elements;
             }
           }).catch(() => {
         })
       },
       onMemberDetailClick(row){
+        this.createMemberForm.name = row.user.name;
+        this.createMemberForm.loginName = row.account.loginName;
+        this.createMemberForm.pin = row.user.pin;
+        this.createMemberForm.empNo = row.user.empNo;
+        this.createMemberForm.gender = row.user.gender;
+        this.createMemberForm.summary = row.user.summary;
+        this.createMemberForm.createTime = row.user.createTime;
+        this.createMemberForm.cellphone = row.contacts[0].value;
+        this.createMemberForm.email = row.contacts[1].value;
         this.createMemberDialogVisible = true;
       },
       handleUserAble(row){
@@ -345,7 +378,7 @@
               message: '删除成功',
               type: 'success'
             });
-            if (this.list.length == 1 && this.query.page.index > 0) {
+            if (this.members.length == 1 && this.query.page.index > 0) {
               this.query.page.index = this.query.page.index - 1;
             }
             this.requestAdminUserList();
@@ -357,6 +390,7 @@
         this.createMemberDialogVisible = true;
       },
       onCreateMemberDialogResetClick(formName) {
+        this.createMemberForm = this.createMemberFormInit;
         this.$refs[formName].resetFields();
       },
       onCreateMemberDialogCloseClick() {
@@ -366,6 +400,7 @@
       onCreateMemberDialogConfirmClick(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            console.log('aaaa')
             this.$store.dispatch('accountAdmin/create', this.createMemberForm)
               .then((response) => {
                 if (response.meta.code == 200) {
@@ -386,7 +421,7 @@
 
 <style scoped>
   .el-container {
-    padding-left:10px;
-    padding-top:20px;
+    padding-left: 10px;
+    padding-top: 20px;
   }
 </style>

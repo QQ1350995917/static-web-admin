@@ -358,7 +358,6 @@
         this.requestAdminUserList()
       },
       onResetPwdConfirm(row) {
-        console.log({uid: row.user.id, aid: row.account.id})
         this.$store.dispatch('accountAdmin/reset', {uid: row.user.id, aid: row.account.id})
           .then((response) => {
             if (response.meta.code == 200) {

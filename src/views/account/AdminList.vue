@@ -27,32 +27,42 @@
 
     <el-main>
       <el-table ref="dragTable" :data="members" row-key="id" style="width: 100%" stripe>
-        <el-table-column align="center" label="序号" type="index" width="100">
+        <el-table-column align="center" label="序号" type="index" width="100" fixed>
           <template slot-scope="scope">
             <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="姓名" sortable>
+        <el-table-column label="姓名" width="120" sortable fixed>
           <template slot-scope="scope">
             <span>{{ scope.row.user.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="账号" sortable>
+        <el-table-column label="账号" width="120" sortable fixed>
           <template slot-scope="scope">
             <span>{{ scope.row.account.loginName }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="工号" sortable>
+        <el-table-column label="手机号" width="120" sortable>
+          <template slot-scope="scope">
+            <span>{{ scope.row.contacts[0].value }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="邮箱" :show-overflow-tooltip="true"  width="260" sortable>
+          <template slot-scope="scope">
+            <span>{{ scope.row.contacts[1].value }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="工号" width="90" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.user.empNo }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="性别" sortable>
+        <el-table-column label="性别" prop="gender" :formatter="setGenderValue" width="80" sortable>
           <template slot-scope="scope">
-            <span>{{ scope.row.user.gender }}</span>
+            <span>{{ scope.row.user.gender == 0 ? '女' : '男' }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="创建时间" sortable>
+        <el-table-column label="创建时间" width="150" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.user.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
@@ -62,7 +72,7 @@
         <!--<span>{{ scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
         <!--</template>-->
         <!--</el-table-column>-->
-        <el-table-column fixed="right" align="center" width="320" label="操作">
+        <el-table-column fixed="right" align="center" width="260" label="操作">
           <template slot-scope="scope">
             <el-popconfirm
               title="确定重置吗？"
@@ -84,7 +94,7 @@
               confirmButtonType="warning"
               cancelButtonText='取消'
               icon="el-icon-warning"
-              @onConfirm="handleUserAble(scope.row)"
+              @onConfirm="onUserAbleClick(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-lock" plain size="mini"></el-button>
             </el-popconfirm>
@@ -96,7 +106,7 @@
               confirmButtonType="warning"
               cancelButtonText='取消'
               icon="el-icon-warning"
-              @onConfirm="handleUserAble(scope.row)"
+              @onConfirm="onUserAbleClick(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-unlock" plain size="mini"></el-button>
             </el-popconfirm>
@@ -108,7 +118,7 @@
               confirmButtonType="danger"
               cancelButtonText='取消'
               icon="el-icon-delete"
-              @onConfirm="handleUserDelete(scope.row)"
+              @onConfirm="requestForDelete(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-delete" plain size="mini"></el-button>
             </el-popconfirm>
@@ -126,18 +136,30 @@
         :total="total" style="margin-top: 10px">
       </el-pagination>
       <el-dialog
-        title="新增"
+        :title="createMemberDialogTitle"
         :visible.sync="createMemberDialogVisible"
         :before-close="onCreateMemberDialogCloseClick">
         <el-form :model="createMemberForm" :rules="createMemberRules" ref="createMemberForm" label-width="120px">
+          <el-form-item label="用户ID" prop="uid" hidden>
+            <el-input v-model="createMemberForm.uid"></el-input>
+          </el-form-item>
           <el-form-item label="姓名" prop="name">
-            <el-input v-model="createMemberForm.name" placeholder="姓名可重复"></el-input>
+            <el-input v-model="createMemberForm.name" placeholder="姓名可重复，2~20个字"></el-input>
+          </el-form-item>
+          <el-form-item label="账号ID" prop="aid" hidden>
+            <el-input v-model="createMemberForm.aid"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="loginName">
-            <el-input v-model="createMemberForm.loginName" placeholder="账号不可重复"></el-input>
+            <el-input v-model="createMemberForm.loginName" placeholder="账号不可重复，4~24个字"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号码ID" prop="cellphoneId" hidden>
+            <el-input v-model="createMemberForm.cellphoneId"></el-input>
           </el-form-item>
           <el-form-item label="手机号码" prop="cellphone">
             <el-input v-model="createMemberForm.cellphone" placeholder="手机号码不可重复"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱ID" prop="emailId" hidden>
+            <el-input v-model="createMemberForm.emailId"></el-input>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="createMemberForm.email" placeholder="邮箱号码不可重复"></el-input>
@@ -152,7 +174,7 @@
             <el-input v-model="createMemberForm.pin" placeholder="身份证号不可重复"></el-input>
           </el-form-item>
           <el-form-item label="工号" prop="empNo">
-            <el-input v-model="createMemberForm.empNo" placeholder="工号不可重复"></el-input>
+            <el-input v-model="createMemberForm.empNo" placeholder="工号不可重复，6~8个字"></el-input>
           </el-form-item>
           <el-form-item label="简介" prop="summary">
             <el-input type="textarea" v-model="createMemberForm.summary"></el-input>
@@ -161,7 +183,7 @@
         <span slot="footer" class="dialog-footer">
           <el-button @click="onCreateMemberDialogResetClick('createMemberForm')">重置</el-button>
           <el-button @click="onCreateMemberDialogCloseClick('createMemberForm')">取消</el-button>
-          <el-button type="primary" @click="onCreateMemberDialogConfirmClick('createMemberForm')">创建</el-button>
+          <el-button type="primary" @click="onCreateMemberDialogCommitClick('createMemberForm')">保存</el-button>
       </span>
       </el-dialog>
     </el-main>
@@ -209,8 +231,14 @@
         total: 0,
         selectAll: false,
         createMemberDialogVisible: false,
+        createMemberDialogTitleCreate: '新增',
+        createMemberDialogTitleEdit: '编辑',
         createMemberDialogTitle: '',
         createMemberFormInit: {
+          uid: '',
+          aid: '',
+          cellphoneId: '',
+          emailId: '',
           name: '',
           pin: '',
           empNo: '',
@@ -222,6 +250,10 @@
           email: '',
         },
         createMemberForm: {
+          uid: '',
+          aid: '',
+          cellphoneId: '',
+          emailId: '',
           name: '',
           pin: '',
           empNo: '',
@@ -231,6 +263,17 @@
           loginName: '',
           cellphone: '',
           email: '',
+        },
+        setGenderValue(row, column) {
+          return this.getGenderValue(row.gender)
+        },
+        getGenderValue(gender){
+          switch (gender) {
+            case 0:
+              return "女";
+            case 1:
+              return "男";
+          }
         },
         createMemberRules: {
           loginName: [
@@ -327,6 +370,10 @@
         })
       },
       onMemberDetailClick(row){
+        this.createMemberForm.uid = row.user.id;
+        this.createMemberForm.aid = row.account.id;
+        this.createMemberForm.cellphoneId = row.contacts[0].id;
+        this.createMemberForm.emailId = row.contacts[1].id;
         this.createMemberForm.name = row.user.name;
         this.createMemberForm.loginName = row.account.loginName;
         this.createMemberForm.pin = row.user.pin;
@@ -336,21 +383,22 @@
         this.createMemberForm.createTime = row.user.createTime;
         this.createMemberForm.cellphone = row.contacts[0].value;
         this.createMemberForm.email = row.contacts[1].value;
+        this.createMemberDialogTitle = this.createMemberDialogTitleEdit;
         this.createMemberDialogVisible = true;
       },
-      handleUserAble(row){
-        if (row.able == 0) {
-          this.handleUserEnable(row);
-        } else if (row.able == 1) {
-          this.handleUserDisable(row);
+      onUserAbleClick(row){
+        if (row.user.able == 0) {
+          this.requestForUserEnable(row);
+        } else if (row.user.able == 1) {
+          this.requestForUserDisable(row);
         } else {
           this.$message.error('参数错误');
         }
       },
-      handleUserEnable(row){
-        this.$store.dispatch('accountAdmin/enable', [row.id])
+      requestForUserEnable(row){
+        this.$store.dispatch('accountAdmin/enable', [row.user.id])
           .then(() => {
-            row.able = 1;
+            row.user.able = 1;
             this.$message({
               message: '启用成功',
               type: 'success'
@@ -359,10 +407,10 @@
           this.$message.error(error);
         })
       },
-      handleUserDisable(row){
-        this.$store.dispatch('accountAdmin/disable', [row.id])
+      requestForUserDisable(row){
+        this.$store.dispatch('accountAdmin/disable', [row.user.id])
           .then(() => {
-            row.able = 0;
+            row.user.able = 0;
             this.$message({
               message: '禁用成功',
               type: 'success'
@@ -371,8 +419,8 @@
           this.$message.error(error);
         })
       },
-      handleUserDelete(row){
-        this.$store.dispatch('accountAdmin/del', [row.id])
+      requestForDelete(row){
+        this.$store.dispatch('accountAdmin/del', [row.user.id])
           .then(() => {
             this.$message({
               message: '删除成功',
@@ -387,6 +435,7 @@
         })
       },
       onCreateMemberButtonClick() {
+        this.createMemberDialogTitle = this.createMemberDialogTitleCreate;
         this.createMemberDialogVisible = true;
       },
       onCreateMemberDialogResetClick(formName) {
@@ -397,16 +446,38 @@
         this.onCreateMemberDialogResetClick('createMemberForm');
         this.createMemberDialogVisible = false;
       },
-      onCreateMemberDialogConfirmClick(formName) {
+      onCreateMemberDialogCommitClick(formName) {
+        if (this.createMemberDialogTitle == this.createMemberDialogTitleCreate) {
+          this.requestForCreateMember(formName);
+        } else if(this.createMemberDialogTitle == this.createMemberDialogTitleEdit)  {
+          this.requestForEditMember(formName);
+        }
+      },
+      requestForCreateMember(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log('aaaa')
             this.$store.dispatch('accountAdmin/create', this.createMemberForm)
               .then((response) => {
                 if (response.meta.code == 200) {
                   this.onCreateMemberDialogCloseClick();
                   this.requestAdminUserList();
                   //this.$router.push({path: this.redirect || 'account/admin/list'})
+                }
+              }).catch((e) => {
+            })
+          } else {
+            return false;
+          }
+        });
+      },
+      requestForEditMember(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$store.dispatch('accountAdmin/edit', this.createMemberForm)
+              .then((response) => {
+                if (response.meta.code == 200) {
+                  this.onCreateMemberDialogCloseClick();
+                  this.requestAdminUserList();
                 }
               }).catch((e) => {
             })

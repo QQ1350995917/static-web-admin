@@ -8,6 +8,14 @@ export function create(params) {
   })
 }
 
+export function edit(params) {
+  return request({
+    url: '/service/account/api/admin/' + params.user.id,
+    method: 'put',
+    data: params
+  })
+}
+
 export function list(page, scopes, sorts) {
   return request({
     url: '/service/account/api/admin?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),
@@ -40,7 +48,7 @@ export function disable(uids) {
 
 export function del(uids) {
   return request({
-    url: '/service/account/api/admin/user',
+    url: '/service/account/api/admin',
     method: 'delete',
     data: uids
   })

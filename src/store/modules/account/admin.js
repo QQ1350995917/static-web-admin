@@ -1,5 +1,6 @@
 import {
   create,
+  edit,
   list,
   detail,
   enable,
@@ -34,6 +35,44 @@ const actions = {
             value: cellphone
           },
           {
+            type: 2,
+            value: email
+          }
+        ]
+      }).then(response => {
+        const data = response
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  edit(commit, state){
+    return new Promise((resolve, reject) => {
+      const {uid, aid, cellphoneId, emailId, loginName, name, cellphone, email, pin, empNo, level, gender, summary} = state
+      edit({
+        user: {
+          id: uid,
+          name: name,
+          pin: pin,
+          empNo: empNo,
+          level: level,
+          gender: gender,
+          summary: summary
+        },
+        account: {
+          id: aid,
+          loginName: loginName,
+          // loginPwd: accountPwd
+        },
+        contacts: [
+          {
+            id: cellphoneId,
+            type: 1,
+            value: cellphone
+          },
+          {
+            id: emailId,
             type: 2,
             value: email
           }

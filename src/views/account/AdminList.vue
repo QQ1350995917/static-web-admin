@@ -8,7 +8,7 @@
       </el-row>
       <el-row style="padding-top: 5px">
         <el-col :span="16">
-          <el-checkbox v-model="selectAll">全选</el-checkbox>
+          <el-checkbox v-model="selectAllMember" @change="onSelectAll">全选</el-checkbox>
         </el-col>
         <el-col :span="2" style="text-align: right">
           <el-button>批量重置</el-button>
@@ -27,6 +27,11 @@
 
     <el-main>
       <el-table ref="dragTable" :data="members" row-key="id" style="width: 100%" stripe>
+        <el-table-column align="center" width="50" fixed>
+          <template slot-scope="scope">
+            <el-checkbox v-model='checkedList' :value="scope.row.user.id"></el-checkbox>
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="序号" type="index" width="100" fixed>
           <template slot-scope="scope">
             <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
@@ -57,7 +62,7 @@
             <span>{{ scope.row.user.empNo }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="性别" prop="gender" :formatter="setGenderValue" width="80" sortable>
+        <el-table-column label="性别" prop="gender" width="80" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.user.gender == 0 ? '女' : '男' }}</span>
           </template>
@@ -229,7 +234,8 @@
         },
         members: [],
         total: 0,
-        selectAll: false,
+        selectAllMember: false,
+        checkedList: [],
         createMemberDialogVisible: false,
         createMemberDialogTitleCreate: '新增',
         createMemberDialogTitleEdit: '编辑',
@@ -263,17 +269,6 @@
           loginName: '',
           cellphone: '',
           email: '',
-        },
-        setGenderValue(row, column) {
-          return this.getGenderValue(row.gender)
-        },
-        getGenderValue(gender){
-          switch (gender) {
-            case 0:
-              return "女";
-            case 1:
-              return "男";
-          }
         },
         createMemberRules: {
           loginName: [
@@ -334,7 +329,34 @@
     created() {
       this.requestAdminUserList()
     },
+    watch: { //深度 watcher
+      'checkedList': {
+        handler: function(val, oldVal) {
+          if (val.length === this.members.length) {
+            console.log("a")
+            this.selectAllMember = true;
+          } else {
+            console.log("b")
+            this.selectAllMember = false;
+          }
+        },
+        deep: true
+      }
+    },
     methods: {
+      onSelectAll: function() {
+        var _this = this;
+        if (_this.selectAllMember) {
+          _this.selectAllMember = false;
+          _this.checkedList = [];
+        } else {
+          _this.selectAllMember = true;
+          _this.checkedList = [];
+          _this.members.forEach(function(item, index) {
+            _this.checkedList.push(item.user.id);
+          });
+        }
+      },
       requestAdminUserList() {
         this.$store.dispatch('accountAdmin/list', this.query)
           .then((response) => {

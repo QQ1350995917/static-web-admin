@@ -358,15 +358,17 @@
         this.requestAdminUserList()
       },
       onResetPwdConfirm(row) {
-        this.$store.dispatch('accountAdmin/reset', this.query)
+        console.log({uid: row.user.id, aid: row.account.id})
+        this.$store.dispatch('accountAdmin/reset', {uid: row.user.id, aid: row.account.id})
           .then((response) => {
             if (response.meta.code == 200) {
-              this.query.page.index = parseInt(response.data.index);
-              this.query.page.size = parseInt(response.data.size);
-              this.total = parseInt(response.data.total);
-              this.members = response.data.elements;
+              this.$message({
+                message: '重置成功',
+                type: 'success'
+              });
             }
-          }).catch(() => {
+          }).catch((error) => {
+          this.$message.error(error);
         })
       },
       onMemberDetailClick(row){

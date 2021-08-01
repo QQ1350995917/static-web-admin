@@ -6,6 +6,7 @@ import {
   enable,
   disable,
   del,
+  reset,
   accountList,
   accountEnable,
   accountDisable,
@@ -129,6 +130,16 @@ const actions = {
   del(commit, uids){
     return new Promise((resolve, reject) => {
       del(uids).then(response => {
+        const data = response
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  reset(commit, params){
+    return new Promise((resolve, reject) => {
+      reset(params).then(response => {
         const data = response
         resolve(data)
       }).catch(error => {

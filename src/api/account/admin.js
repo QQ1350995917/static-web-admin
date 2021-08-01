@@ -54,6 +54,13 @@ export function del(uids) {
   })
 }
 
+export function reset(params) {
+  return request({
+    url: '/service/account/api/admin/' + params.uid + "/" + params.aid + "/pwd/reset",
+    method: 'patch'
+  })
+}
+
 export function accountList(uid, page, scopes, sorts) {
   return request({
     url: '/service/account/api/admin/account/' + uid + '?page=' + encodeURI(JSON.stringify(page)) + "&scopes=" + encodeURI(JSON.stringify(scopes)) + "&sorts=" + encodeURI(JSON.stringify(sorts)),

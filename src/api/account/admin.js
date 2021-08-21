@@ -56,8 +56,9 @@ export function del(uids) {
 
 export function reset(params) {
   return request({
-    url: '/service/account/api/admin/' + params.uid + "/" + params.aid + "/pwd/reset",
-    method: 'patch'
+    url: '/service/account/api/admin/pwd/reset',
+    method: 'patch',
+    data: params
   })
 }
 

@@ -1,37 +1,34 @@
 <template>
   <el-container>
-    <el-header>
-      <el-row>
-        <el-input placeholder="输入关键字进行查找">
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </el-row>
+    <el-header style="height: 30px">
       <el-row style="padding-top: 5px">
-        <el-col :span="16">
-          <el-checkbox v-model="selectAllMember" @change="onSelectAll">全选</el-checkbox>
+        <el-col :span="14">
+          <el-input placeholder="输入关键字进行查找">
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
         </el-col>
         <el-col :span="2" style="text-align: right">
-          <el-button>批量重置</el-button>
+          <el-button @click="onCheckedResetPwdButtonClick">批量改密</el-button>
         </el-col>
         <el-col :span="2" style="text-align: right">
-          <el-button>批量锁定</el-button>
+          <el-button @click="onCheckedDisableButtonClick">批量禁用</el-button>
         </el-col>
         <el-col :span="2" style="text-align: right">
-          <el-button>批量删除</el-button>
+          <el-button @click="onCheckedEnableButtonClick">批量启用</el-button>
         </el-col>
         <el-col :span="2" style="text-align: right">
-          <el-button @click="onCreateMemberButtonClick">新增</el-button>
+          <el-button @click="onCheckedDeleteButtonClick">批量删除</el-button>
+        </el-col>
+        <el-col :span="2" style="text-align: right">
+          <el-button @click="onCreateButtonClick">新增</el-button>
         </el-col>
       </el-row>
     </el-header>
 
     <el-main>
-      <el-table ref="dragTable" :data="members" row-key="id" style="width: 100%" stripe>
-        <el-table-column align="center" width="50" fixed>
-          <template slot-scope="scope">
-            <el-checkbox v-model='checkedList' :value="scope.row.user.id"></el-checkbox>
-          </template>
-        </el-table-column>
+      <el-table ref="mainTable" :data="mainTableData" row-key="id" style="width: 100%" stripe
+                tooltip-effect="light" highlight-current-row @selection-change="checkedChange">
+        <el-table-column align="center" type="selection" width="50" fixed :disable="checkedAll"></el-table-column>
         <el-table-column align="center" label="序号" type="index" width="100" fixed>
           <template slot-scope="scope">
             <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
@@ -52,7 +49,7 @@
             <span>{{ scope.row.contacts[0].value }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="邮箱" :show-overflow-tooltip="true"  width="260" sortable>
+        <el-table-column label="邮箱" :show-overflow-tooltip="true" width="260" sortable>
           <template slot-scope="scope">
             <span>{{ scope.row.contacts[1].value }}</span>
           </template>
@@ -86,7 +83,7 @@
               confirmButtonType="warning"
               cancelButtonText='取消'
               icon="el-icon-warning"
-              @onConfirm="onResetPwdConfirm(scope.row)"
+              @onConfirm="onItemResetPwdConfirm(scope.row)"
             >
               <el-button slot="reference" plain size="mini">重置密码</el-button>
             </el-popconfirm>
@@ -99,7 +96,7 @@
               confirmButtonType="warning"
               cancelButtonText='取消'
               icon="el-icon-warning"
-              @onConfirm="onUserAbleClick(scope.row)"
+              @onConfirm="onItemAbleClick(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-lock" plain size="mini"></el-button>
             </el-popconfirm>
@@ -111,7 +108,7 @@
               confirmButtonType="warning"
               cancelButtonText='取消'
               icon="el-icon-warning"
-              @onConfirm="onUserAbleClick(scope.row)"
+              @onConfirm="onItemAbleClick(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-unlock" plain size="mini"></el-button>
             </el-popconfirm>
@@ -123,7 +120,7 @@
               confirmButtonType="danger"
               cancelButtonText='取消'
               icon="el-icon-delete"
-              @onConfirm="requestForDelete(scope.row)"
+              @onConfirm="onItemDeleteClick(scope.row)"
             >
               <el-button slot="reference" icon="el-icon-delete" plain size="mini"></el-button>
             </el-popconfirm>
@@ -141,54 +138,54 @@
         :total="total" style="margin-top: 10px">
       </el-pagination>
       <el-dialog
-        :title="createMemberDialogTitle"
-        :visible.sync="createMemberDialogVisible"
-        :before-close="onCreateMemberDialogCloseClick">
-        <el-form :model="createMemberForm" :rules="createMemberRules" ref="createMemberForm" label-width="120px">
+        :title="createDialogTitle"
+        :visible.sync="createDialogVisible"
+        :before-close="onCreateDialogCloseClick">
+        <el-form :model="createDialogForm" :rules="createDialogFormRules" ref="createDialogForm" label-width="120px">
           <el-form-item label="用户ID" prop="uid" hidden>
-            <el-input v-model="createMemberForm.uid"></el-input>
+            <el-input v-model="createDialogForm.uid"></el-input>
           </el-form-item>
           <el-form-item label="姓名" prop="name">
-            <el-input v-model="createMemberForm.name" placeholder="姓名可重复，2~20个字"></el-input>
+            <el-input v-model="createDialogForm.name" placeholder="姓名可重复，2~20个字"></el-input>
           </el-form-item>
           <el-form-item label="账号ID" prop="aid" hidden>
-            <el-input v-model="createMemberForm.aid"></el-input>
+            <el-input v-model="createDialogForm.aid"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="loginName">
-            <el-input v-model="createMemberForm.loginName" placeholder="账号不可重复，4~24个字"></el-input>
+            <el-input v-model="createDialogForm.loginName" placeholder="账号不可重复，4~24个字"></el-input>
           </el-form-item>
           <el-form-item label="手机号码ID" prop="cellphoneId" hidden>
-            <el-input v-model="createMemberForm.cellphoneId"></el-input>
+            <el-input v-model="createDialogForm.cellphoneId"></el-input>
           </el-form-item>
           <el-form-item label="手机号码" prop="cellphone">
-            <el-input v-model="createMemberForm.cellphone" placeholder="手机号码不可重复"></el-input>
+            <el-input v-model="createDialogForm.cellphone" placeholder="手机号码不可重复"></el-input>
           </el-form-item>
           <el-form-item label="邮箱ID" prop="emailId" hidden>
-            <el-input v-model="createMemberForm.emailId"></el-input>
+            <el-input v-model="createDialogForm.emailId"></el-input>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
-            <el-input v-model="createMemberForm.email" placeholder="邮箱号码不可重复"></el-input>
+            <el-input v-model="createDialogForm.email" placeholder="邮箱号码不可重复"></el-input>
           </el-form-item>
           <el-form-item label="性别" prop="gender">
-            <el-radio-group v-model="createMemberForm.gender">
+            <el-radio-group v-model="createDialogForm.gender">
               <el-radio label="0">女</el-radio>
               <el-radio label="1">男</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="身份证号" prop="pin">
-            <el-input v-model="createMemberForm.pin" placeholder="身份证号不可重复"></el-input>
+            <el-input v-model="createDialogForm.pin" placeholder="身份证号不可重复"></el-input>
           </el-form-item>
           <el-form-item label="工号" prop="empNo">
-            <el-input v-model="createMemberForm.empNo" placeholder="工号不可重复，6~8个字"></el-input>
+            <el-input v-model="createDialogForm.empNo" placeholder="工号不可重复，6~8个字"></el-input>
           </el-form-item>
           <el-form-item label="简介" prop="summary">
-            <el-input type="textarea" v-model="createMemberForm.summary"></el-input>
+            <el-input type="textarea" v-model="createDialogForm.summary"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="onCreateMemberDialogResetClick('createMemberForm')">重置</el-button>
-          <el-button @click="onCreateMemberDialogCloseClick('createMemberForm')">取消</el-button>
-          <el-button type="primary" @click="onCreateMemberDialogCommitClick('createMemberForm')">保存</el-button>
+          <el-button @click="onCreateDialogResetClick('createDialogForm')">重置</el-button>
+          <el-button @click="onCreateDialogCloseClick('createDialogForm')">取消</el-button>
+          <el-button type="primary" @click="onCreateDialogCommitClick('createDialogForm')">保存</el-button>
       </span>
       </el-dialog>
     </el-main>
@@ -232,15 +229,15 @@
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
           sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
-        members: [],
+        mainTableData: [],
         total: 0,
-        selectAllMember: false,
+        checkedAll: false,
         checkedList: [],
-        createMemberDialogVisible: false,
-        createMemberDialogTitleCreate: '新增',
-        createMemberDialogTitleEdit: '编辑',
-        createMemberDialogTitle: '',
-        createMemberFormInit: {
+        createDialogVisible: false,
+        createDialogTitleCreate: '新增',
+        createDialogTitleEdit: '编辑',
+        createDialogTitle: '',
+        createDialogFormInit: {
           uid: '',
           aid: '',
           cellphoneId: '',
@@ -255,7 +252,7 @@
           cellphone: '',
           email: '',
         },
-        createMemberForm: {
+        createDialogForm: {
           uid: '',
           aid: '',
           cellphoneId: '',
@@ -270,7 +267,7 @@
           cellphone: '',
           email: '',
         },
-        createMemberRules: {
+        createDialogFormRules: {
           loginName: [
             {required: true, message: '请输入账户名称', trigger: 'blur'},
             {min: 4, max: 24, message: '长度在 4 到 24 个字符', trigger: 'blur'}
@@ -329,33 +326,18 @@
     created() {
       this.requestAdminUserList()
     },
-    watch: { //深度 watcher
-      'checkedList': {
-        handler: function(val, oldVal) {
-          if (val.length === this.members.length) {
-            console.log("a")
-            this.selectAllMember = true;
-          } else {
-            console.log("b")
-            this.selectAllMember = false;
-          }
-        },
-        deep: true
-      }
-    },
     methods: {
-      onSelectAll: function() {
-        var _this = this;
-        if (_this.selectAllMember) {
-          _this.selectAllMember = false;
-          _this.checkedList = [];
-        } else {
-          _this.selectAllMember = true;
-          _this.checkedList = [];
-          _this.members.forEach(function(item, index) {
-            _this.checkedList.push(item.user.id);
+      checkAll(data) {
+        if (data) {
+          data.forEach(row => {
+            this.$refs.mainTable.toggleRowSelection(row);
           });
+        } else {
+          this.$refs.mainTable.clearSelection();
         }
+      },
+      checkedChange(val){
+        this.checkedList = val;
       },
       requestAdminUserList() {
         this.$store.dispatch('accountAdmin/list', this.query)
@@ -364,7 +346,7 @@
               this.query.page.index = parseInt(response.data.index);
               this.query.page.size = parseInt(response.data.size);
               this.total = parseInt(response.data.total);
-              this.members = response.data.elements;
+              this.mainTableData = response.data.elements;
             }
           }).catch(() => {
         })
@@ -379,77 +361,140 @@
         this.query.page.index = index;
         this.requestAdminUserList()
       },
-      onResetPwdConfirm(row) {
-        this.$store.dispatch('accountAdmin/reset', {uid: row.user.id, aid: row.account.id})
+      onCheckedResetPwdButtonClick(){
+        var _this = this;
+        var resetting = [];
+        this.checkedList.forEach(item => {
+          resetting.push({uid: item.user.id, aid: item.account.id});
+        });
+        this.requestForResetPwd(resetting,function () {
+          _this.$message({
+            message: '重置成功',
+            type: 'success'
+          });
+        });
+      },
+      onItemResetPwdConfirm(row) {
+        var _this = this;
+        var resetting = [{uid: row.user.id, aid: row.account.id}];
+        this.requestForResetPwd(resetting,function () {
+          _this.$message({
+            message: '重置成功',
+            type: 'success'
+          });
+        })
+      },
+      requestForResetPwd(ids,successCallback) {
+        this.$store.dispatch('accountAdmin/reset', ids)
           .then((response) => {
             if (response.meta.code == 200) {
-              this.$message({
-                message: '重置成功',
-                type: 'success'
-              });
+              successCallback()
             }
           }).catch((error) => {
           this.$message.error(error);
         })
       },
       onMemberDetailClick(row){
-        this.createMemberForm.uid = row.user.id;
-        this.createMemberForm.aid = row.account.id;
-        this.createMemberForm.cellphoneId = row.contacts[0].id;
-        this.createMemberForm.emailId = row.contacts[1].id;
-        this.createMemberForm.name = row.user.name;
-        this.createMemberForm.loginName = row.account.loginName;
-        this.createMemberForm.pin = row.user.pin;
-        this.createMemberForm.empNo = row.user.empNo;
-        this.createMemberForm.gender = row.user.gender;
-        this.createMemberForm.summary = row.user.summary;
-        this.createMemberForm.createTime = row.user.createTime;
-        this.createMemberForm.cellphone = row.contacts[0].value;
-        this.createMemberForm.email = row.contacts[1].value;
-        this.createMemberDialogTitle = this.createMemberDialogTitleEdit;
-        this.createMemberDialogVisible = true;
+        this.createDialogForm.uid = row.user.id;
+        this.createDialogForm.aid = row.account.id;
+        this.createDialogForm.cellphoneId = row.contacts[0].id;
+        this.createDialogForm.emailId = row.contacts[1].id;
+        this.createDialogForm.name = row.user.name;
+        this.createDialogForm.loginName = row.account.loginName;
+        this.createDialogForm.pin = row.user.pin;
+        this.createDialogForm.empNo = row.user.empNo;
+        this.createDialogForm.gender = row.user.gender;
+        this.createDialogForm.summary = row.user.summary;
+        this.createDialogForm.createTime = row.user.createTime;
+        this.createDialogForm.cellphone = row.contacts[0].value;
+        this.createDialogForm.email = row.contacts[1].value;
+        this.createDialogTitle = this.createDialogTitleEdit;
+        this.createDialogVisible = true;
       },
-      onUserAbleClick(row){
+      onCheckedDisableButtonClick(){
+        var _this = this;
+        var disabling = [];
+        this.checkedList.forEach(item => {
+          disabling.push(item.user.id);
+        });
+        this.requestForUserDisable(disabling,function () {
+          _this.$message({
+            message: '禁用成功',
+            type: 'success'
+          });
+          _this.checkedList.forEach(item => {
+            item.user.able = 0;
+          });
+        });
+      },
+      onCheckedEnableButtonClick(){
+        var _this = this;
+        var enabling = [];
+        this.checkedList.forEach(item => {
+          enabling.push(item.user.id);
+        });
+        this.requestForUserEnable(enabling,function () {
+          _this.$message({
+            message: '启用成功',
+            type: 'success'
+          });
+          _this.checkedList.forEach(item => {
+            item.user.able = 1;
+          });
+        });
+      },
+      onItemAbleClick(row){
+        var _this = this;
         if (row.user.able == 0) {
-          this.requestForUserEnable(row);
+          this.requestForUserEnable([row.user.id], function () {
+            row.user.able = 1;
+            _this.$message({
+              message: '启用成功',
+              type: 'success'
+            });
+          });
         } else if (row.user.able == 1) {
-          this.requestForUserDisable(row);
+          this.requestForUserDisable([row.user.id], function () {
+            row.user.able = 0;
+            _this.$message({
+              message: '禁用成功',
+              type: 'success'
+            });
+          });
         } else {
           this.$message.error('参数错误');
         }
       },
-      requestForUserEnable(row){
-        this.$store.dispatch('accountAdmin/enable', [row.user.id])
-          .then(() => {
-            row.user.able = 1;
-            this.$message({
-              message: '启用成功',
-              type: 'success'
-            });
-          }).catch((error) => {
+      requestForUserEnable(ids, successCallback){
+        this.$store.dispatch('accountAdmin/enable', ids)
+          .then(successCallback()).catch((error) => {
           this.$message.error(error);
         })
       },
-      requestForUserDisable(row){
-        this.$store.dispatch('accountAdmin/disable', [row.user.id])
-          .then(() => {
-            row.user.able = 0;
-            this.$message({
-              message: '禁用成功',
-              type: 'success'
-            });
-          }).catch((error) => {
+      requestForUserDisable(ids, successCallback){
+        this.$store.dispatch('accountAdmin/disable', ids)
+          .then(successCallback()).catch((error) => {
           this.$message.error(error);
         })
       },
-      requestForDelete(row){
-        this.$store.dispatch('accountAdmin/del', [row.user.id])
+      onCheckedDeleteButtonClick() {
+        var deleting = [];
+        this.checkedList.forEach(item => {
+          deleting.push(item.user.id);
+        });
+        this.requestForDelete(deleting);
+      },
+      onItemDeleteClick(row) {
+        this.requestForDelete([row.user.id]);
+      },
+      requestForDelete(ids){
+        this.$store.dispatch('accountAdmin/del', ids)
           .then(() => {
             this.$message({
               message: '删除成功',
               type: 'success'
             });
-            if (this.members.length == 1 && this.query.page.index > 0) {
+            if (this.mainTableData.length == 1 && this.query.page.index > 0) {
               this.query.page.index = this.query.page.index - 1;
             }
             this.requestAdminUserList();
@@ -457,32 +502,32 @@
           this.$message.error(error);
         })
       },
-      onCreateMemberButtonClick() {
-        this.createMemberDialogTitle = this.createMemberDialogTitleCreate;
-        this.createMemberDialogVisible = true;
+      onCreateButtonClick() {
+        this.createDialogTitle = this.createDialogTitleCreate;
+        this.createDialogVisible = true;
       },
-      onCreateMemberDialogResetClick(formName) {
-        this.createMemberForm = this.createMemberFormInit;
+      onCreateDialogResetClick(formName) {
+        this.createDialogForm = this.createDialogFormInit;
         this.$refs[formName].resetFields();
       },
-      onCreateMemberDialogCloseClick() {
-        this.onCreateMemberDialogResetClick('createMemberForm');
-        this.createMemberDialogVisible = false;
+      onCreateDialogCloseClick() {
+        this.onCreateDialogResetClick('createDialogForm');
+        this.createDialogVisible = false;
       },
-      onCreateMemberDialogCommitClick(formName) {
-        if (this.createMemberDialogTitle == this.createMemberDialogTitleCreate) {
+      onCreateDialogCommitClick(formName) {
+        if (this.createDialogTitle == this.createDialogTitleCreate) {
           this.requestForCreateMember(formName);
-        } else if(this.createMemberDialogTitle == this.createMemberDialogTitleEdit)  {
+        } else if (this.createDialogTitle == this.createDialogTitleEdit) {
           this.requestForEditMember(formName);
         }
       },
       requestForCreateMember(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('accountAdmin/create', this.createMemberForm)
+            this.$store.dispatch('accountAdmin/create', this.createDialogForm)
               .then((response) => {
                 if (response.meta.code == 200) {
-                  this.onCreateMemberDialogCloseClick();
+                  this.onCreateDialogCloseClick();
                   this.requestAdminUserList();
                   //this.$router.push({path: this.redirect || 'account/admin/list'})
                 }
@@ -496,10 +541,10 @@
       requestForEditMember(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('accountAdmin/edit', this.createMemberForm)
+            this.$store.dispatch('accountAdmin/edit', this.createDialogForm)
               .then((response) => {
                 if (response.meta.code == 200) {
-                  this.onCreateMemberDialogCloseClick();
+                  this.onCreateDialogCloseClick();
                   this.requestAdminUserList();
                 }
               }).catch((e) => {

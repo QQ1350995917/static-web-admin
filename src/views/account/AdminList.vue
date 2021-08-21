@@ -26,45 +26,47 @@
     </el-header>
 
     <el-main>
-      <el-table ref="mainTable" :data="mainTableData" row-key="id" style="width: 100%" stripe
-                tooltip-effect="light" highlight-current-row @selection-change="checkedChange">
+      <el-table ref="mainTable" :data="mainTableDataList" row-key="id" style="width: 100%" stripe
+                tooltip-effect="light" highlight-current-row
+                @selection-change="onCheckedChange"
+                @sort-change="onSortChange">
         <el-table-column align="center" type="selection" width="50" fixed :disable="checkedAll"></el-table-column>
         <el-table-column align="center" label="序号" type="index" width="100" fixed>
           <template slot-scope="scope">
             <span>{{scope.$index + query.page.index * query.page.size + 1}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="姓名" width="120" sortable fixed>
+        <el-table-column label="姓名" prop="userName"   width="120" sortable='custom' fixed>
           <template slot-scope="scope">
             <span>{{ scope.row.user.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="账号" width="120" sortable fixed>
+        <el-table-column label="账号" prop="accountName" width="120" sortable='custom' fixed>
           <template slot-scope="scope">
             <span>{{ scope.row.account.loginName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="手机号" width="120" sortable>
+        <el-table-column label="手机号" prop="cellphone" width="120" sortable='custom'>
           <template slot-scope="scope">
             <span>{{ scope.row.contacts[0].value }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="邮箱" :show-overflow-tooltip="true" width="260" sortable>
+        <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" width="260" sortable='custom'>
           <template slot-scope="scope">
             <span>{{ scope.row.contacts[1].value }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="工号" width="90" sortable>
+        <el-table-column label="工号" prop="empNo" width="90" sortable='custom'>
           <template slot-scope="scope">
             <span>{{ scope.row.user.empNo }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="性别" prop="gender" width="80" sortable>
+        <el-table-column label="性别" prop="gender" width="80" sortable='custom'>
           <template slot-scope="scope">
             <span>{{ scope.row.user.gender == 0 ? '女' : '男' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" width="150" sortable>
+        <el-table-column label="创建时间" prop="create_time" width="150" sortable='custom'>
           <template slot-scope="scope">
             <span>{{ scope.row.user.createTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
@@ -229,7 +231,7 @@
           scopes: [{"fieldName": "del", "fieldValue": "0", "hit": "EM"}],
           sorts: [{"fieldName": "create_Time", "sort": "asc"}]
         },
-        mainTableData: [],
+        mainTableDataList: [],
         total: 0,
         checkedAll: false,
         checkedList: [],
@@ -324,7 +326,7 @@
       }
     },
     created() {
-      this.requestAdminUserList()
+      this.requestForMainTableList()
     },
     methods: {
       checkAll(data) {
@@ -336,30 +338,43 @@
           this.$refs.mainTable.clearSelection();
         }
       },
-      checkedChange(val){
+      onCheckedChange(val){
         this.checkedList = val;
       },
-      requestAdminUserList() {
+      requestForMainTableList() {
         this.$store.dispatch('accountAdmin/list', this.query)
           .then((response) => {
             if (response.meta.code == 200) {
               this.query.page.index = parseInt(response.data.index);
               this.query.page.size = parseInt(response.data.size);
               this.total = parseInt(response.data.total);
-              this.mainTableData = response.data.elements;
+              this.mainTableDataList = response.data.elements;
             }
           }).catch(() => {
         })
       },
-
+      onSortChange(props){
+        if (props.order == 'ascending') {
+          this.query.sorts[0].fieldName = props.prop
+          this.query.sorts[0].sort = "ASC"
+        } else if (props.order == 'descending') {
+          this.query.sorts[0].fieldName = props.prop
+          this.query.sorts[0].sort = "DESC"
+        } else {
+          this.query.sorts[0].fieldName = 'create_time'
+          this.query.sorts[0].sort = "ASC"
+        }
+        console.log(JSON.stringify(this.query.sorts))
+        this.requestForMainTableList();
+      },
       handleSizeChange(size) {
         this.query.page.size = size;
-        this.requestAdminUserList()
+        this.requestForMainTableList()
       },
       handleIndexChange(index) {
         index = index - 1;
         this.query.page.index = index;
-        this.requestAdminUserList()
+        this.requestForMainTableList()
       },
       onCheckedResetPwdButtonClick(){
         var _this = this;
@@ -494,10 +509,10 @@
               message: '删除成功',
               type: 'success'
             });
-            if (this.mainTableData.length == 1 && this.query.page.index > 0) {
+            if (this.mainTableDataList.length == 1 && this.query.page.index > 0) {
               this.query.page.index = this.query.page.index - 1;
             }
-            this.requestAdminUserList();
+            this.requestForMainTableList();
           }).catch((error) => {
           this.$message.error(error);
         })
@@ -527,8 +542,12 @@
             this.$store.dispatch('accountAdmin/create', this.createDialogForm)
               .then((response) => {
                 if (response.meta.code == 200) {
+                  this.$message({
+                    message: '创建成功',
+                    type: 'success'
+                  });
                   this.onCreateDialogCloseClick();
-                  this.requestAdminUserList();
+                  this.requestForMainTableList();
                   //this.$router.push({path: this.redirect || 'account/admin/list'})
                 }
               }).catch((e) => {
@@ -544,8 +563,12 @@
             this.$store.dispatch('accountAdmin/edit', this.createDialogForm)
               .then((response) => {
                 if (response.meta.code == 200) {
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success'
+                  });
                   this.onCreateDialogCloseClick();
-                  this.requestAdminUserList();
+                  this.requestForMainTableList();
                 }
               }).catch((e) => {
             })

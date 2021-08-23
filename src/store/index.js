@@ -6,6 +6,7 @@ import errorLog from './modules/errorLog'
 import permission from './modules/permission'
 import tagsView from './modules/tagsView'
 import settings from './modules/settings'
+import accessAdmin from './modules/access/index'
 import accountAdmin from './modules/account/admin'
 import accountKey from './modules/account/key'
 import accountSession from './modules/account/session'
@@ -21,6 +22,7 @@ const store = new Vuex.Store({
     permission,
     tagsView,
     settings,
+    accessAdmin,
     accountAdmin,
     accountKey,
     accountSession,

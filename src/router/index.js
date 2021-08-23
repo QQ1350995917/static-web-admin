@@ -123,6 +123,24 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/access',
+    component: Layout,
+    redirect: '/access/index',
+    name: 'access',
+    meta: {
+      title: 'Access',
+      icon: 'user'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/access/index'),
+        name: 'Index',
+        meta: { title: 'Index', icon: 'list' }
+      }
+    ]
+  },
+  {
     path: '/account',
     component: Layout,
     redirect: '/account/list',

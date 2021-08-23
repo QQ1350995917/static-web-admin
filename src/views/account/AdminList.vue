@@ -89,7 +89,7 @@
             >
               <el-button slot="reference" plain size="mini">重置密码</el-button>
             </el-popconfirm>
-            <el-button @click="onMemberDetailClick(scope.row)" icon="el-icon-edit" plain size="mini"></el-button>
+            <el-button @click="onItemDetailClick(scope.row)" icon="el-icon-edit" plain size="mini"></el-button>
             <el-popconfirm
               v-if="scope.row.user.able == 1"
               title="确定禁用吗？"
@@ -409,7 +409,7 @@
           this.$message.error(error);
         })
       },
-      onMemberDetailClick(row){
+      onItemDetailClick(row){
         this.createDialogForm.uid = row.user.id;
         this.createDialogForm.aid = row.account.id;
         this.createDialogForm.cellphoneId = row.contacts[0].id;

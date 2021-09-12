@@ -48,6 +48,21 @@
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="summary" prop="summary"  width="120" sortable='custom' fixed>
+          <template slot-scope="scope">
+            <span>{{ scope.row.summary }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="order" prop="order"  width="120" sortable='custom' fixed>
+          <template slot-scope="scope">
+            <span>{{ scope.row.order }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="leaf" prop="leaf"  width="120" sortable='custom' fixed>
+          <template slot-scope="scope">
+            <span>{{ scope.row.leaf }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="able" prop="able"  width="120" sortable='custom' fixed>
           <template slot-scope="scope">
             <span>{{ scope.row.able }}</span>
@@ -139,6 +154,15 @@
           <el-form-item label="name" prop="name">
             <el-input v-model="createDialogForm.name"></el-input>
           </el-form-item>
+          <el-form-item label="summary" prop="summary">
+            <el-input v-model="createDialogForm.summary"></el-input>
+          </el-form-item>
+          <el-form-item label="order" prop="order">
+            <el-input v-model="createDialogForm.order"></el-input>
+          </el-form-item>
+          <el-form-item label="leaf" prop="leaf">
+            <el-input v-model="createDialogForm.leaf"></el-input>
+          </el-form-item>
           <el-form-item label="able" prop="able">
             <el-input v-model="createDialogForm.able"></el-input>
           </el-form-item>
@@ -180,7 +204,7 @@
       ElPopover,
       ElButton
     },
-    name: 'index',
+    name: 'List',
     filters: {
       statusFilter(status) {
         const statusMap = {
@@ -214,6 +238,9 @@
             id: '',
             pid: '',
             name: '',
+            summary: '',
+            order: '',
+            leaf: '',
             able: '',
             del: '',
             createTime: '',
@@ -224,6 +251,9 @@
             id: '',
             pid: '',
             name: '',
+            summary: '',
+            order: '',
+            leaf: '',
             able: '',
             del: '',
             createTime: '',
@@ -233,6 +263,7 @@
         createDialogFormRules: {
             id:
           [
+            {required: true, message: 'id', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -248,6 +279,7 @@
          ],
             pid:
           [
+            {required: true, message: 'pid', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -263,6 +295,54 @@
          ],
             name:
           [
+            {required: true, message: 'name', trigger: 'blur'},
+//            {required: true, message: '请输入名称', trigger: 'blur'},
+//            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
+//            {
+//              validator: function(rule, value, callback) {
+//                if (/^((13[0-9])|(15([0-3]|[5-9]))|(166)|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}$/i.test(value) == false) {
+//                  callback(new Error("手机号格式错误"));
+//                } else {
+//                  callback();
+//                }
+//              },
+//              trigger: "blur"
+//            }
+         ],
+            summary:
+          [
+//            {required: true, message: '请输入名称', trigger: 'blur'},
+//            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
+//            {
+//              validator: function(rule, value, callback) {
+//                if (/^((13[0-9])|(15([0-3]|[5-9]))|(166)|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}$/i.test(value) == false) {
+//                  callback(new Error("手机号格式错误"));
+//                } else {
+//                  callback();
+//                }
+//              },
+//              trigger: "blur"
+//            }
+         ],
+            order:
+          [
+            {required: true, message: 'order', trigger: 'blur'},
+//            {required: true, message: '请输入名称', trigger: 'blur'},
+//            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
+//            {
+//              validator: function(rule, value, callback) {
+//                if (/^((13[0-9])|(15([0-3]|[5-9]))|(166)|(17[0,1,3,5,6,7,8])|(18[0-9])|(19[8|9]))\\d{8}$/i.test(value) == false) {
+//                  callback(new Error("手机号格式错误"));
+//                } else {
+//                  callback();
+//                }
+//              },
+//              trigger: "blur"
+//            }
+         ],
+            leaf:
+          [
+            {required: true, message: 'leaf', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -278,6 +358,7 @@
          ],
             able:
           [
+            {required: true, message: 'able', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -293,6 +374,7 @@
          ],
             del:
           [
+            {required: true, message: 'del', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -308,6 +390,7 @@
          ],
             createTime:
           [
+            {required: true, message: 'create_time', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -323,6 +406,7 @@
          ],
             updateTime:
           [
+            {required: true, message: 'update_time', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -338,6 +422,7 @@
          ],
             version:
           [
+            {required: true, message: 'version', trigger: 'blur'},
 //            {required: true, message: '请输入名称', trigger: 'blur'},
 //            {min: 4, max: 24, message: '长度在 M 到 N 个字符', trigger: 'blur'},
 //            {
@@ -371,7 +456,7 @@
         this.checkedList = val;
       },
       requestForMainTableList() {
-        this.$store.dispatch('accessAdmin/list', this.query)
+        this.$store.dispatch('accessAdminMenu/list', this.query)
         .then((response) => {
           if (response.meta.code == 200) {
           this.query.page.index = parseInt(response.data.index);
@@ -408,6 +493,9 @@
         this.createDialogForm.id = row.id;
         this.createDialogForm.pid = row.pid;
         this.createDialogForm.name = row.name;
+        this.createDialogForm.summary = row.summary;
+        this.createDialogForm.order = row.order;
+        this.createDialogForm.leaf = row.leaf;
         this.createDialogForm.able = row.able;
         this.createDialogForm.del = row.del;
         this.createDialogForm.createTime = row.createTime;
@@ -452,7 +540,7 @@
         var _this = this;
         if (row.able == 0) {
           this.requestForUserEnable([row.id], function () {
-            row.user.able = 1;
+            row.able = 1;
             _this.$message({
               message: '启用成功',
               type: 'success'
@@ -471,13 +559,13 @@
         }
       },
       requestForUserEnable(ids, successCallback){
-        this.$store.dispatch('accessAdmin/enable', ids)
+        this.$store.dispatch('accessAdminMenu/enable', ids)
         .then(successCallback()).catch((error) => {
           this.$message.error(error);
       })
       },
       requestForUserDisable(ids, successCallback){
-        this.$store.dispatch('accessAdmin/disable', ids)
+        this.$store.dispatch('accessAdminMenu/disable', ids)
         .then(successCallback()).catch((error) => {
           this.$message.error(error);
       })
@@ -493,7 +581,7 @@
         this.requestForDelete([row.id]);
       },
       requestForDelete(ids){
-        this.$store.dispatch('accessAdmin/del', ids)
+        this.$store.dispatch('accessAdminMenu/del', ids)
         .then(() => {
           this.$message({
           message: '删除成功',
@@ -509,6 +597,7 @@
       },
       onCreateButtonClick() {
         this.createDialogTitle = this.createDialogTitleCreate;
+        this.createDialogForm = this.createDialogFormInit;
         this.createDialogVisible = true;
       },
       onCreateDialogResetClick(formName) {
@@ -529,7 +618,7 @@
       requestForCreateMember(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('accessAdmin/create', this.createDialogForm)
+            this.$store.dispatch('accessAdminMenu/create', this.createDialogForm)
             .then((response) => {
               if (response.meta.code == 200) {
                 this.$message({
@@ -548,7 +637,7 @@
       requestForEditMember(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$store.dispatch('accessAdmin/edit', this.createDialogForm)
+            this.$store.dispatch('accessAdminMenu/edit', this.createDialogForm)
             .then((response) => {
               if (response.meta.code == 200) {
                 this.$message({

@@ -133,11 +133,23 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/access/index'),
-        name: 'Index',
-        meta: { title: 'Index', icon: 'list' }
-      }
+        path: 'access/Access',
+        component: () => import('@/views/access/Access'),
+        name: 'Access',
+        meta: { title: 'Access', icon: 'list' }
+      },
+      {
+        path: 'access/Menu',
+        component: () => import('@/views/access/Menu'),
+        name: 'Menu',
+        meta: { title: 'Menu', icon: 'list' }
+      },
+      {
+        path: 'access/Role',
+        component: () => import('@/views/access/Role'),
+        name: 'Role',
+        meta: { title: 'Role', icon: 'list' }
+      },
     ]
   },
   {
